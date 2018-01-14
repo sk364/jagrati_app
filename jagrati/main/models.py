@@ -35,7 +35,7 @@ class Class(models.Model):
     name = models.CharField(max_length=10)
 
 class Attendance(models.Model):
-    user_id = models.OneToOneField(User, related_name='user_attendance', on_delete=models.CASCADE) 
-    class_id = models.OneToOneField(Class, related_name='class_attendance', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='user_attendance', on_delete=models.CASCADE) 
+    _class = models.ForeignKey(Class, related_name='class_attendance', on_delete=models.CASCADE)
     class_date = models.DateField()
 
