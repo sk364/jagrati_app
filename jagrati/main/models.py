@@ -20,7 +20,6 @@ class UserProfile(models.Model):
     )
 
     user = models.OneToOneField(User, related_name='user_profile', on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
     programme = models.CharField(max_length=10, choices=PROGRAMME_CHOICES)
     discipline = models.CharField(max_length=3, choices=DEPARTMENT_CHOICES)
     dob = models.DateField(blank=True, null=True)
