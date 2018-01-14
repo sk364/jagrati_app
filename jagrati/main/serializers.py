@@ -17,7 +17,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
     class Meta:
         model = UserProfile
-        fields = "__all__"
+        fields = ('user', 'programme', 'discipline', 'dob', 'batch', 'contact',
+                  'address', 'status', 'is_contact_hidden', 'display_picture', )
 
 
 class ClassSerializer(serializers.ModelSerializer):
@@ -30,8 +31,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
 
     def get_photo_url(self, obj):
-        user = obj.user
-        return user.user_profile.display_picture #return URL raher than just picture name
+        return obj.user.user_profile.display_picture.url or None
 
     photo_url = serializers.SerializerMethodField(read_only=True)
 
