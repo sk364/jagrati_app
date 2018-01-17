@@ -29,9 +29,11 @@ class ClassSerializer(serializers.ModelSerializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
+    _class = ClassSerializer(Class.objects.all())
 
     def get_photo_url(self, obj):
-        return obj.user.user_profile.display_picture.url or None
+        dp = obj.user.user_profile.display_picture
+        return dp.url if dp else ''
 
     photo_url = serializers.SerializerMethodField(read_only=True)
 
