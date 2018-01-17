@@ -26,6 +26,9 @@ SECRET_KEY = 'xz166t!xvh+f!jm12#azi4j310lhx9gi5l0!cxm3f44+-7b7*7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+MEDIA_URL = '/uploads/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'uploads')
+
 ALLOWED_HOSTS = []
 
 
