@@ -3,7 +3,9 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Attendance, Class, StudentProfile, UserProfile
+from .models import (Attendance, Class, StudentProfile, UserProfile,
+                     Hobby, UserHobby, Skill, UserSkill, Subject,
+                     Syllabus, StudentFeedback, Event, )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -51,3 +53,66 @@ class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
         fields = ('user', '_class', 'class_date', 'photo_url')
+
+
+class HobbySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hobby
+        fields = ('id', 'name', )
+
+
+class UserHobbySerializer(serializers.ModelSerializer):
+    user = UserSerializer(User.objects.all())
+    hobby = HobbySerializer(Hobby.objects.all())
+
+    class Meta:
+        model = UserHobby
+        fields = ('user', 'hobby', )
+
+
+class SkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = ('id', 'name', )
+
+
+class UserSkillSerializer(serializers.ModelSerializer):
+    user = UserSerializer(User.objects.all())
+    skill = SkillSerializer(Skill.objects.all())
+
+    class Meta:
+        model = UserSkill
+        fields = ('user', 'skill', )
+
+
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ('id', 'name', )
+
+
+class SyllabusSerializer(serializers.ModelSerializer):
+    _class = ClassSerializer(Class.objects.all())
+    subject = SubjectSerializer(Subject.objects.all())
+
+    class Meta:
+        model = Syllabus
+        fields = ('_class', 'subject', 'content', )
+
+
+class StudentFeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentFeedback
+        fields = ('student', 'user', 'title', 'feedback', )
+
+
+class EventSerializer(serializers.ModelSerializer):
+    def get_image(self, obj):
+        img = obj.image
+        return img.url if img else ''
+
+    image = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Event
+        fields = ('id', 'time', '_type', 'title', 'description', 'image')
