@@ -43,12 +43,19 @@ class Class(models.Model):
         return '{} - {}'.format(self.id, self.name)
 
 
-class UserClass(models.Model):
-    user = models.ForeignKey(User, related_name='class_user', on_delete=models.CASCADE)
-    _class = models.ForeignKey(Class, related_name='user_class', on_delete=models.CASCADE)
+class StudentProfile(models.Model):
+    user = models.OneToOneField(User, related_name='student_profile', on_delete=models.CASCADE)
+    _class = models.ForeignKey(Class, related_name='student_class', on_delete=models.CASCADE)
+    village = models.CharField(max_length=50, blank=True, null=True)
+    sex = models.CharField(max_length=10, blank=True, null=True)
+    dob = models.DateField(blank=True, null=True)
+    mother = models.CharField(max_length=50, blank=True, null=True)
+    father = models.CharField(max_length=50, blank=True, null=True)
+    contact = models.IntegerField(blank=True, null=True)
+    emergency_contact = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
-        return '{} - {}'.format(self.user, self._class)
+        return '{} - {} - {}'.format(self.user, self._class, self.village)
 
 
 class Attendance(models.Model):
@@ -58,3 +65,75 @@ class Attendance(models.Model):
 
     def __str__(self):
         return '{} - {} - {}'.format(self.user, self._class, self.class_date)
+
+
+class Hobby(models.Model):
+    name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return '{} - {}'.format(self.id, self.name)
+
+
+class UserHobby(models.Model):
+    user = models.ForeignKey(User, related_name='hobby_user', on_delete=models.CASCADE)
+    hobby = models.ForeignKey(Hobby, related_name='user_hobby', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} - {}'.format(self.user, self.hobby)
+
+
+class Skill(models.Model):
+    name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return '{} - {}'.format(self.id, self.name)
+
+
+class UserSkill(models.Model):
+    user = models.ForeignKey(User, related_name='skill_user', on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, related_name='user_skill', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} - {}'.format(self.user, self.skill)
+
+
+class Subject(models.Model):
+    name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return '{} - {}'.format(self.id, self.name)
+
+
+class Syllabus(models.Model):
+    _class = models.ForeignKey(Class, related_name='class_syllabus', on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, related_name='subject_syllabus', on_delete=models.CASCADE)
+    content = models.CharField(max_length=200)
+
+    def __str__(self):
+        return '{} - {} - {}'.format(self._class, self.subject, self.content)
+
+
+class StudentFeedback(models.Model):
+    student = models.ForeignKey(User, related_name='student_feedback', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='volunteer_feedback', on_delete=models.CASCADE)
+    title = models.CharField(max_length=50)
+    feedback = models.CharField(max_length=100)
+
+    def __str__(self):
+        return '{} - {} - {} - {}'.format(self.student, self.user, self.title, self.feedback)
+
+
+class Event(models.Model):
+    EVENT_TYPE_CHOICES = (
+        ('EVENT', 'EVENT'),
+        ('MEETING', 'MEETING')
+    )
+
+    time = models.DateTimeField()
+    _type = models.CharField(max_length=7, choices=EVENT_TYPE_CHOICES)
+    title = models.CharField(max_length=30)
+    description = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='uploads')
+
+    def __str__(self):
+        return '{} - {} - {}'.format(self.title, self.time, self._type)
