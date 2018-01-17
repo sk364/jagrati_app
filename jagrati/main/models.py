@@ -31,6 +31,8 @@ class UserProfile(models.Model):
     status = models.CharField(max_length=128, blank=True, null=True)
     is_contact_hidden = models.BooleanField(default=False)
     display_picture = models.ImageField(upload_to='uploads/')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {} - {}'.format(self.user, self.programme, self.batch)
@@ -38,6 +40,8 @@ class UserProfile(models.Model):
 
 class Class(models.Model):
     name = models.CharField(max_length=10)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {}'.format(self.id, self.name)
@@ -53,6 +57,8 @@ class StudentProfile(models.Model):
     father = models.CharField(max_length=50, blank=True, null=True)
     contact = models.IntegerField(blank=True, null=True)
     emergency_contact = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {} - {}'.format(self.user, self._class, self.village)
@@ -62,6 +68,8 @@ class Attendance(models.Model):
     user = models.ForeignKey(User, related_name='user_attendance', on_delete=models.CASCADE) 
     _class = models.ForeignKey(Class, related_name='class_attendance', on_delete=models.CASCADE)
     class_date = models.DateField(default=datetime.date.today)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {} - {}'.format(self.user, self._class, self.class_date)
@@ -69,6 +77,8 @@ class Attendance(models.Model):
 
 class Hobby(models.Model):
     name = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {}'.format(self.id, self.name)
@@ -77,6 +87,8 @@ class Hobby(models.Model):
 class UserHobby(models.Model):
     user = models.ForeignKey(User, related_name='hobby_user', on_delete=models.CASCADE)
     hobby = models.ForeignKey(Hobby, related_name='user_hobby', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {}'.format(self.user, self.hobby)
@@ -84,6 +96,8 @@ class UserHobby(models.Model):
 
 class Skill(models.Model):
     name = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {}'.format(self.id, self.name)
@@ -92,6 +106,8 @@ class Skill(models.Model):
 class UserSkill(models.Model):
     user = models.ForeignKey(User, related_name='skill_user', on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, related_name='user_skill', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {}'.format(self.user, self.skill)
@@ -99,6 +115,8 @@ class UserSkill(models.Model):
 
 class Subject(models.Model):
     name = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {}'.format(self.id, self.name)
@@ -108,6 +126,8 @@ class Syllabus(models.Model):
     _class = models.ForeignKey(Class, related_name='class_syllabus', on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, related_name='subject_syllabus', on_delete=models.CASCADE)
     content = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {} - {}'.format(self._class, self.subject, self.content)
@@ -118,6 +138,8 @@ class StudentFeedback(models.Model):
     user = models.ForeignKey(User, related_name='volunteer_feedback', on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     feedback = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {} - {} - {}'.format(self.student, self.user, self.title, self.feedback)
@@ -134,6 +156,8 @@ class Event(models.Model):
     title = models.CharField(max_length=30)
     description = models.CharField(max_length=200)
     image = models.ImageField(upload_to='uploads')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} - {} - {}'.format(self.title, self.time, self._type)
