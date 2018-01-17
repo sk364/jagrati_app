@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Attendance, Class, UserProfile
+from .models import Attendance, Class, StudentProfile, UserProfile
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -15,6 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
+
     class Meta:
         model = UserProfile
         fields = ('user', 'programme', 'discipline', 'dob', 'batch', 'contact',
@@ -25,6 +26,16 @@ class ClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = Class
         fields = ('id', 'name', )
+
+
+class StudentProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(User.objects.all())
+    _class = ClassSerializer(Class.objects.all())
+
+    class Meta:
+        model = StudentProfile
+        fields = ('user', '_class', 'village', 'sex', 'dob', 'mother', 'father',
+                  'contact', 'emergency_contact', )
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
