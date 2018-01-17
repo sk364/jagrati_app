@@ -161,3 +161,13 @@ class Event(models.Model):
 
     def __str__(self):
         return '{} - {} - {}'.format(self.title, self.time, self._type)
+
+
+class VolunteerClass(models.Model):
+    volunteer = models.ForeignKey(User, related_name='volunteer_class', on_delete=models.CASCADE)
+    _class = models.ForeignKey(Class, related_name='class_volunteer', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.volunteer, self._class)
