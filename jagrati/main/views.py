@@ -4,8 +4,10 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 
-from .models import Attendance, Class, UserClass, UserProfile
-from .serializers import AttendanceSerializer, ClassSerializer, UserProfileSerializer, UserSerializer
+from .models import Attendance, Class, StudentProfile, UserProfile
+from .serializers import (AttendanceSerializer, ClassSerializer,
+                          StudentProfileSerializer, UserProfileSerializer,
+                          UserSerializer, )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -31,20 +33,14 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         """
 
         class_id = request.query_params.get('class_id', None)
-        if class_id is not None:
-            query = {
-                'user__is_staff': False,
-                'user__is_superuser': False,
-                'user__class_user___class': class_id
-            }
-            queryset = UserProfile.objects.filter(**query)
-            serializer = UserProfileSerializer(queryset, many=True)
-            return Response(serializer.data)
+        query = {}
 
-        return Response({
-            'success': False,
-            'detail': 'Required argument `class_id` missing.'
-        }, status=status.HTTP_400_BAD_REQUEST)
+        if class_id is not None:
+            query['_class'] = class_id
+
+        queryset = StudentProfile.objects.filter(**query)
+        serializer = StudentProfileSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class AttendaceViewSet(viewsets.ModelViewSet):
@@ -52,6 +48,31 @@ class AttendaceViewSet(viewsets.ModelViewSet):
     serializer_class = AttendanceSerializer
     filter_backends = (filters.DjangoFilterBackend, )
     filter_fields = ('_class', 'class_date', )
+
+    def get_attendance_objs(self, _class, student_ids):
+        """
+        Params:
+          - `_class` Class object
+          - `student_ids` list of student IDs
+        Returns a tuple of list of Attendance objects and errors
+        """
+
+        attendance_objs = []
+        errors = []
+        for student_id in student_ids:
+            try:
+                # check if user is in this class
+                StudentProfile.objects.get(user=student_id, _class=_class)
+
+                attendance_objs.append(Attendance(
+                    user=User.objects.get(id=student_id),
+                    _class=_class
+                ))
+            except (User.DoesNotExist, StudentProfile.DoesNotExist):
+                errors.append(student_id)
+
+        return attendance_objs, errors
+
 
     def create(self, request):
         """
@@ -64,8 +85,6 @@ class AttendaceViewSet(viewsets.ModelViewSet):
         class_id = request.data.get('class_id', None)
         student_ids = request.data.get('student_ids', None)
         # class_date = request.data.get('class_date', None)
-        class_attendance = []
-        errors = ''
 
         if class_id is None or student_ids is None:
             return Response({
@@ -82,19 +101,10 @@ class AttendaceViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         student_ids = student_ids.split(',')
-        for student_id in student_ids:
-            try:
-                # check if user is in this class
-                UserClass.objects.get(user=student_id, _class=_class)
+        attendance_objs, errors = self.get_attendance_objs(_class, student_ids)
 
-                class_attendance.append(Attendance(
-                    user=User.objects.get(id=student_id),
-                    _class=_class
-                ))
-            except (User.DoesNotExist, UserClass.DoesNotExist):
-                errors += student_id + ', '
-
-        Attendance.objects.bulk_create(class_attendance)
+        if attendance_objs:
+            Attendance.objects.bulk_create(attendance_objs)
 
         if errors is '':
             return Response({
@@ -104,7 +114,7 @@ class AttendaceViewSet(viewsets.ModelViewSet):
         else:
             return Response({
                 'success': False,
-                'detail': 'Unsaved student ids - {}'.format(errors)
+                'detail': 'Unsaved student ids - {}'.format(', '.join(errors))
             }, status=status.HTTP_201_CREATED)
 
 
