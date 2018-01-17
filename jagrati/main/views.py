@@ -24,23 +24,12 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
-    @list_route(methods=['get'])
-    def students(self, request):
-        """
-        Query Params:
-          - `class_id` (integer, required)
-        Response: list of user profiles
-        """
 
-        class_id = request.query_params.get('class_id', None)
-        query = {}
-
-        if class_id is not None:
-            query['_class'] = class_id
-
-        queryset = StudentProfile.objects.filter(**query)
-        serializer = StudentProfileSerializer(queryset, many=True)
-        return Response(serializer.data)
+class StudentProfileViewSet(viewsets.ModelViewSet):
+    queryset = StudentProfile.objects.all()
+    serializer_class = StudentProfileSerializer
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('_class', )
 
 
 class AttendaceViewSet(viewsets.ModelViewSet):
