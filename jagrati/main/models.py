@@ -65,8 +65,7 @@ class StudentProfile(models.Model):
 
 
 class Attendance(models.Model):
-    user = models.ForeignKey(User, related_name='user_attendance', on_delete=models.CASCADE) 
-    _class = models.ForeignKey(Class, related_name='class_attendance', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='user_attendance', on_delete=models.CASCADE)
     class_date = models.DateField(default=datetime.date.today)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
