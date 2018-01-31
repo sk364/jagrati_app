@@ -72,7 +72,7 @@ class Attendance(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.user, self._class, self.class_date)
+        return '{} - {}'.format(self.user, self.class_date)
 
 
 class Hobby(models.Model):
