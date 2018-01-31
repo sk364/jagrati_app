@@ -28,8 +28,6 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
-    filter_backends = (filters.DjangoFilterBackend, )
-    filter_fields = ('_class', )
 
 
 class AttendaceViewSet(viewsets.ModelViewSet):
@@ -38,10 +36,9 @@ class AttendaceViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, )
     filter_fields = ('_class', 'class_date', )
 
-    def get_attendance_objs(self, _class, student_ids):
+    def get_attendance_objs(self, student_ids):
         """
         Params:
-          - `_class` Class object
           - `student_ids` list of student IDs
         Returns a tuple of list of Attendance objects and errors
         """
@@ -50,14 +47,10 @@ class AttendaceViewSet(viewsets.ModelViewSet):
         errors = []
         for student_id in student_ids:
             try:
-                # check if user is in this class
-                StudentProfile.objects.get(user=student_id, _class=_class)
-
                 attendance_objs.append(Attendance(
-                    user=User.objects.get(id=student_id),
-                    _class=_class
+                    user=User.objects.get(id=student_id)
                 ))
-            except (User.DoesNotExist, StudentProfile.DoesNotExist):
+            except User.DoesNotExist:
                 errors.append(student_id)
 
         return attendance_objs, errors
@@ -66,36 +59,26 @@ class AttendaceViewSet(viewsets.ModelViewSet):
     def create(self, request):
         """
         Request Data:
-          - `class_id` (integer, required)
-          - `student_ids` (string of comma-separated integers [eg: "1,2,3"], required)
+          - `student_ids` (list of integers [eg: [1,2,3]], required)
         Response: dict
         """
 
-        class_id = request.data.get('class_id', None)
         student_ids = request.data.get('student_ids', None)
         # class_date = request.data.get('class_date', None)
 
-        if class_id is None or student_ids is None:
+        if student_ids is None:
             return Response({
                 'success': False,
                 'detail': 'Missing Required Arguments.'
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            _class = Class.objects.get(id=class_id)
-        except Class.DoesNotExist:
-            return Response({
-                'success': False,
-                'detail': 'Class with id {} does not exist.'.format(class_id)
-            }, status=status.HTTP_400_BAD_REQUEST)
 
-        student_ids = student_ids.split(',')
-        attendance_objs, errors = self.get_attendance_objs(_class, student_ids)
+        attendance_objs, errors = self.get_attendance_objs(student_ids)
 
         if attendance_objs:
             Attendance.objects.bulk_create(attendance_objs)
 
-        if errors is '':
+        if errors == []:
             return Response({
                 'success': True,
                 'detail': 'Class Attendance Saved.'

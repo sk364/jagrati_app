@@ -57,6 +57,7 @@ class StudentProfile(models.Model):
     father = models.CharField(max_length=50, blank=True, null=True)
     contact = models.IntegerField(blank=True, null=True)
     emergency_contact = models.IntegerField(blank=True, null=True)
+    display_picture = models.ImageField(upload_to='uploads/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

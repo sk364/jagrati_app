@@ -37,7 +37,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentProfile
         fields = ('user', '_class', 'village', 'sex', 'dob', 'mother', 'father',
-                  'contact', 'emergency_contact', )
+                  'contact', 'emergency_contact', 'display_picture', )
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
