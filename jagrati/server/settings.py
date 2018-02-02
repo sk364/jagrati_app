@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import datetime
 import os
 
+from corsheaders.defaults import default_headers
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -27,7 +29,7 @@ SECRET_KEY = 'xz166t!xvh+f!jm12#azi4j310lhx9gi5l0!cxm3f44+-7b7*7'
 DEBUG = True
 
 MEDIA_URL = '/uploads/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'uploads')
+MEDIA_ROOT = os.path.join(BASE_DIR, '')
 
 ALLOWED_HOSTS = ['localhost', '172.27.48.77']
 
@@ -63,6 +65,9 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
     'http://172.27.48.77:3000'
+)
+CORS_ALLOW_HEADERS = default_headers + (
+    'enctype',
 )
 
 REST_FRAMEWORK = {
