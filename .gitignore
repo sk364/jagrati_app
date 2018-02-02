@@ -103,4 +103,4 @@ ENV/
 db.sqlite3
 **/migrations/*
 
-uploads/**
+jagrati/uploads/
