@@ -107,12 +107,6 @@ class StudentFeedbackSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
-    def get_image(self, obj):
-        img = obj.image
-        return img.url if img else ''
-
-    image = serializers.SerializerMethodField(read_only=True)
-
     class Meta:
         model = Event
-        fields = ('id', 'time', '_type', 'title', 'description', 'image')
+        fields = ('id', 'time', '_type', 'title', 'description', 'image', )

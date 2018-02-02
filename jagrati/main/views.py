@@ -4,8 +4,8 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 
-from .models import Attendance, Class, StudentProfile, UserProfile
-from .serializers import (AttendanceSerializer, ClassSerializer,
+from .models import Attendance, Class, Event, StudentProfile, UserProfile
+from .serializers import (AttendanceSerializer, ClassSerializer, EventSerializer,
                           StudentProfileSerializer, UserProfileSerializer,
                           UserSerializer, )
 
@@ -114,3 +114,8 @@ class AttendaceViewSet(viewsets.ModelViewSet):
             'success': True,
             'dates': attendance_dates
         })
+
+
+class EventViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
