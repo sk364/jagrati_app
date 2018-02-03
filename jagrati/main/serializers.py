@@ -15,6 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
                   'is_superuser', 'is_staff')
 
 
+# TODO: Add `attendance_count` to `fields`
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
 

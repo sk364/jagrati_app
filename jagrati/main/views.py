@@ -1,13 +1,16 @@
+import jwt
 from django.contrib.auth.models import User
 from django_filters import rest_framework as filters
 from rest_framework import status, viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_jwt.utils import jwt_decode_handler
 
-from .models import Attendance, Class, Event, StudentProfile, UserProfile
+from .models import Attendance, Class, Event, StudentProfile, UserHobby, UserProfile, UserSkill
 from .serializers import (AttendanceSerializer, ClassSerializer, EventSerializer,
-                          StudentProfileSerializer, UserProfileSerializer,
-                          UserSerializer, )
+                          StudentProfileSerializer, UserHobbySerializer,
+                          UserProfileSerializer, UserSerializer, UserSkillSerializer )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -20,9 +23,13 @@ class ClassViewSet(viewsets.ModelViewSet):
     serializer_class = ClassSerializer
 
 
-class UserProfileViewSet(viewsets.ModelViewSet):
+class VolunteerProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+    lookup_field = 'user__id'
+
+    def get_queryset(self):
+        return UserProfile.objects.filter(user__is_staff=True)
 
 
 class StudentProfileViewSet(viewsets.ModelViewSet):
@@ -119,3 +126,50 @@ class AttendaceViewSet(viewsets.ModelViewSet):
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+
+
+class UserHobbyViewSet(viewsets.ModelViewSet):
+    queryset = UserHobby.objects.all()
+    serializer_class = UserHobbySerializer
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('user', 'hobby', )
+
+
+class UserSkillViewSet(viewsets.ModelViewSet):
+    queryset = UserSkill.objects.all()
+    serializer_class = UserSkillSerializer
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('user', 'skill', )
+
+
+class UserDetailAPIView(APIView):
+    def get(self, request):
+        """
+        :desc: GET HTTP request handler to process jwt
+        """
+
+        _jwt = request.query_params.get('jwt', None)
+
+        if _jwt is None:
+            return Response({
+                'success': False,
+                'detail': 'Missing jwt query param'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            payload = jwt_decode_handler(_jwt)
+        except (jwt.ExpiredSignature, jwt.DecodeError, jwt.InvalidTokenError):
+            return Response({
+                'detail': 'Token is invalid',
+                'success': False
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        user_id = payload['user_id']
+        user = User.objects.get(id=user_id)
+        is_admin = user.is_superuser
+
+        return Response({
+            'user_id': user_id,
+            'is_admin': is_admin,
+            'success': True
+        })
