@@ -24,6 +24,9 @@ Install project requirements
 > cd jagrati_app  
 > pip install -r requirements.txt  
 
+Configure your environment (Create `.env` file from `.env.default` and change values in `.env` file)
+> cp .env.default .env
+
 Make migrations & Migrate
 > python manage.py makemigrations  
 > python manage.py migrate
