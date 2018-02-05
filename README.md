@@ -5,24 +5,24 @@ Install python3.6, pip, virtualenv
 
 Install pip  
 
-> sudo apt-get install python-pip  
+> sudo apt-get install python-pip python3.6-dev libmysqlclient-dev  
 
 Upgrade to latest version
 > sudo pip install -U pip
 
 And, finally use pip to install virtualenv  
-> sudo pip install virtualenv
+> sudo pip install virtualenv  
 
 Create a virtual environment with python 3.6  
 > virtualenv -p python3.6 venv  
-> source venv/bin/activate
+> source venv/bin/activate  
 
 Clone the project  
 > git clone https://github.com/sk364/jagrati_app
 
 Install project requirements  
 > cd jagrati_app  
-> pip install -r requirements.txt
+> pip install -r requirements.txt  
 
 Make migrations & Migrate
 > python manage.py makemigrations  
