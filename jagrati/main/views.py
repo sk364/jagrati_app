@@ -35,6 +35,7 @@ class VolunteerProfileViewSet(viewsets.ModelViewSet):
 class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
+    lookup_field = 'user__id'
 
 
 class AttendaceViewSet(viewsets.ModelViewSet):

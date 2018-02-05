@@ -35,10 +35,25 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
     _class = ClassSerializer(Class.objects.all())
 
+    def get_attendance_data(self, obj):
+        """
+        :desc: Returns number of classes attended by user and total number of classes
+        """
+
+        user_attendance = obj.user.user_attendance.count()
+        total_classes = Attendance.objects.values('class_date').distinct().count()
+
+        return {
+            'attendance': user_attendance,
+            'total_classes': total_classes
+        }
+
+    attendance_data = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = StudentProfile
         fields = ('user', '_class', 'village', 'sex', 'dob', 'mother', 'father',
-                  'contact', 'emergency_contact', 'display_picture', )
+                  'contact', 'emergency_contact', 'display_picture', 'attendance_data', )
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
