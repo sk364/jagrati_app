@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import (Attendance, Class, StudentProfile, UserProfile,
-                     Hobby, UserHobby, Skill, UserSkill, Subject,
+from .models import (Attendance, Class, ClassFeedback, StudentProfile,
+                     UserProfile, Hobby, UserHobby, Skill, UserSkill, Subject,
                      Syllabus, StudentFeedback, Event, )
 
 
@@ -120,6 +120,27 @@ class StudentFeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentFeedback
         fields = ('student', 'user', 'title', 'feedback', )
+
+
+class ClassFeedbackSerializer(serializers.ModelSerializer):
+    _class = ClassSerializer(Class.objects.all())
+    subject = SubjectSerializer(Subject.objects.all())
+
+    def create(self, validated_data):
+        validated_data = self.initial_data
+        class_id = validated_data['_class']['id']
+        subject_id = validated_data['subject']['id']
+        feedback = validated_data['feedback']
+
+        class_feedback_obj = self.Meta.model.objects.create(
+            _class_id=class_id, subject_id=subject_id, feedback=feedback
+        )
+
+        return class_feedback_obj
+
+    class Meta:
+        model = ClassFeedback
+        fields = ('_class', 'subject', 'feedback', )
 
 
 class EventSerializer(serializers.ModelSerializer):

@@ -145,6 +145,14 @@ class StudentFeedback(models.Model):
         return '{} - {} - {} - {}'.format(self.student, self.user, self.title, self.feedback)
 
 
+class ClassFeedback(models.Model):
+    _class = models.ForeignKey(Class, related_name='class_feedback', on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, related_name='subject_feedback', on_delete=models.CASCADE)
+    feedback = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class Event(models.Model):
     EVENT_TYPE_CHOICES = (
         ('EVENT', 'EVENT'),

@@ -7,10 +7,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_jwt.utils import jwt_decode_handler
 
-from .models import Attendance, Class, Event, StudentProfile, UserHobby, UserProfile, UserSkill
-from .serializers import (AttendanceSerializer, ClassSerializer, EventSerializer,
-                          StudentProfileSerializer, UserHobbySerializer,
-                          UserProfileSerializer, UserSerializer, UserSkillSerializer )
+from .models import (Attendance, Class, ClassFeedback, Event, StudentProfile, Subject,
+                     Syllabus, UserHobby, UserProfile, UserSkill, )
+from .serializers import (AttendanceSerializer, ClassSerializer, ClassFeedbackSerializer,
+                          EventSerializer, StudentProfileSerializer, SyllabusSerializer,
+                          UserHobbySerializer, UserProfileSerializer, UserSerializer,
+                          UserSkillSerializer, )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -141,6 +143,54 @@ class UserSkillViewSet(viewsets.ModelViewSet):
     serializer_class = UserSkillSerializer
     filter_backends = (filters.DjangoFilterBackend, )
     filter_fields = ('user', 'skill', )
+
+
+class SyllabusViewSet(viewsets.ModelViewSet):
+    queryset = Syllabus.objects.all()
+    serializer_class = SyllabusSerializer
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('_class', )
+
+
+class ClassFeedbackViewSet(viewsets.ModelViewSet):
+    queryset = ClassFeedback.objects.all()
+    serializer_class = ClassFeedbackSerializer
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('_class', )
+
+    def create(self, request):
+        data = request.data
+        _class = data.get('_class', None)
+        subject = data.get('subject', None)
+        feedback = data.get('feedback', None)
+        is_invalid_data = True
+
+        if _class is not None and subject is not None and feedback is not None:
+            is_invalid_data = False
+            _class_id = _class.get('id', None)
+            subject_id = subject.get('id', None)
+
+            if _class_id is not None and subject_id is not None:
+                try:
+                    Class.objects.get(id=_class_id)
+                except Class.DoesNotExist:
+                    is_invalid_data = True
+
+                try:
+                    Subject.objects.get(id=subject_id)
+                except Subject.DoesNotExist:
+                    is_invalid_data = True
+
+                if is_invalid_data is False:
+                    return super(ClassFeedbackViewSet, self).create(request)
+
+            is_invalid_data = True
+
+        if is_invalid_data:
+            return Response({
+                'success': False,
+                'detail': 'Data is invalid'
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserDetailAPIView(APIView):
