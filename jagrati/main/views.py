@@ -7,12 +7,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_jwt.utils import jwt_decode_handler
 
-from .models import (Attendance, Class, ClassFeedback, Event, StudentProfile, Subject,
+from .models import (Attendance, Class, ClassFeedback, Event, StudentFeedback, StudentProfile, Subject,
                      Syllabus, UserHobby, UserProfile, UserSkill, )
 from .serializers import (AttendanceSerializer, ClassSerializer, ClassFeedbackSerializer,
-                          EventSerializer, StudentProfileSerializer, SyllabusSerializer,
-                          UserHobbySerializer, UserProfileSerializer, UserSerializer,
-                          UserSkillSerializer, )
+                          EventSerializer, StudentFeedbackSerializer, StudentProfileSerializer,
+                          SyllabusSerializer, UserHobbySerializer, UserProfileSerializer,
+                          UserSerializer, UserSkillSerializer, )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -194,6 +194,11 @@ class ClassFeedbackViewSet(viewsets.ModelViewSet):
                 'success': False,
                 'detail': 'Data is invalid'
             }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentFeedbackViewSet(viewsets.ModelViewSet):
+    queryset = StudentFeedback.objects.all()
+    serializer_class = StudentFeedbackSerializer
 
 
 class UserDetailAPIView(APIView):
