@@ -37,6 +37,8 @@ class VolunteerProfileViewSet(viewsets.ModelViewSet):
 class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('_class', )
     lookup_field = 'user__id'
 
 
