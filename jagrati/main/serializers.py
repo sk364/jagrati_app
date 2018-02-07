@@ -140,7 +140,7 @@ class ClassFeedbackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ClassFeedback
-        fields = ('_class', 'subject', 'feedback', )
+        fields = ('_class', 'subject', 'feedback', 'created_at', )
 
 
 class EventSerializer(serializers.ModelSerializer):

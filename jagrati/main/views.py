@@ -159,6 +159,7 @@ class ClassFeedbackViewSet(viewsets.ModelViewSet):
     serializer_class = ClassFeedbackSerializer
     filter_backends = (filters.DjangoFilterBackend, )
     filter_fields = ('_class', )
+    lookup_field = '_class__id'
 
     def create(self, request):
         data = request.data
