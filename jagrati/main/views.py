@@ -11,12 +11,11 @@ from .models import (Attendance, Class, Event, Group, GroupFeedback,
                      GroupSubject, StudentFeedback, StudentProfile, Subject,
                      Syllabus, UserHobby, UserProfile, UserSkill, )
 from .serializers import (AttendanceSerializer, ClassSerializer,
-                          GroupFeedbackSerializer, GroupSerializer,
-                          GroupSubjectSerializer, EventSerializer,
-                          StudentFeedbackSerializer, StudentProfileSerializer,
-                          SyllabusSerializer, UserHobbySerializer,
-                          UserProfileSerializer, UserSerializer,
-                          UserSkillSerializer, )
+                          GroupFeedbackSerializer, GroupSubjectSerializer,
+                          EventSerializer, StudentFeedbackSerializer,
+                          StudentProfileSerializer, SyllabusSerializer,
+                          UserHobbySerializer, UserProfileSerializer,
+                          UserSerializer, UserSkillSerializer, )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -27,11 +26,6 @@ class UserViewSet(viewsets.ModelViewSet):
 class ClassViewSet(viewsets.ModelViewSet):
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
-
-
-class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
 
 
 class VolunteerProfileViewSet(viewsets.ModelViewSet):
