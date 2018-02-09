@@ -7,11 +7,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_jwt.utils import jwt_decode_handler
 
-from .models import (Attendance, Class, ClassFeedback, Event, StudentFeedback, StudentProfile, Subject,
+from .models import (Attendance, Class, Event, Group, GroupFeedback,
+                     GroupSubject, StudentFeedback, StudentProfile, Subject,
                      Syllabus, UserHobby, UserProfile, UserSkill, )
-from .serializers import (AttendanceSerializer, ClassSerializer, ClassFeedbackSerializer,
-                          EventSerializer, StudentFeedbackSerializer, StudentProfileSerializer,
-                          SyllabusSerializer, UserHobbySerializer, UserProfileSerializer,
+from .serializers import (AttendanceSerializer, ClassSerializer,
+                          GroupFeedbackSerializer, GroupSubjectSerializer,
+                          EventSerializer, StudentFeedbackSerializer,
+                          StudentProfileSerializer, SyllabusSerializer,
+                          UserHobbySerializer, UserProfileSerializer,
                           UserSerializer, UserSkillSerializer, )
 
 
@@ -38,7 +41,7 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
     filter_backends = (filters.DjangoFilterBackend, )
-    filter_fields = ('_class', )
+    filter_fields = ('_class__class_group', )
     lookup_field = 'user__id'
 
 
@@ -46,7 +49,7 @@ class AttendaceViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
     filter_backends = (filters.DjangoFilterBackend, )
-    filter_fields = ('_class', 'class_date', )
+    filter_fields = ('class_date', )
 
     def get_attendance_objs(self, student_ids):
         """
@@ -154,29 +157,29 @@ class SyllabusViewSet(viewsets.ModelViewSet):
     filter_fields = ('_class', )
 
 
-class ClassFeedbackViewSet(viewsets.ModelViewSet):
-    queryset = ClassFeedback.objects.all()
-    serializer_class = ClassFeedbackSerializer
+class GroupFeedbackViewSet(viewsets.ModelViewSet):
+    queryset = GroupFeedback.objects.all()
+    serializer_class = GroupFeedbackSerializer
     filter_backends = (filters.DjangoFilterBackend, )
-    filter_fields = ('_class', )
-    lookup_field = '_class__id'
+    filter_fields = ('group', )
+    lookup_field = 'group__id'
 
     def create(self, request):
         data = request.data
-        _class = data.get('_class', None)
+        group = data.get('group', None)
         subject = data.get('subject', None)
         feedback = data.get('feedback', None)
         is_invalid_data = True
 
-        if _class is not None and subject is not None and feedback is not None:
+        if group is not None and subject is not None and feedback is not None:
             is_invalid_data = False
-            _class_id = _class.get('id', None)
+            group_id = group.get('id', None)
             subject_id = subject.get('id', None)
 
-            if _class_id is not None and subject_id is not None:
+            if group_id is not None and subject_id is not None:
                 try:
-                    Class.objects.get(id=_class_id)
-                except Class.DoesNotExist:
+                    Group.objects.get(id=group_id)
+                except Group.DoesNotExist:
                     is_invalid_data = True
 
                 try:
@@ -185,7 +188,7 @@ class ClassFeedbackViewSet(viewsets.ModelViewSet):
                     is_invalid_data = True
 
                 if is_invalid_data is False:
-                    return super(ClassFeedbackViewSet, self).create(request)
+                    return super(GroupFeedbackViewSet, self).create(request)
 
             is_invalid_data = True
 
@@ -199,6 +202,13 @@ class ClassFeedbackViewSet(viewsets.ModelViewSet):
 class StudentFeedbackViewSet(viewsets.ModelViewSet):
     queryset = StudentFeedback.objects.all()
     serializer_class = StudentFeedbackSerializer
+
+
+class GroupSubjectViewSet(viewsets.ModelViewSet):
+    queryset = GroupSubject.objects.all()
+    serializer_class = GroupSubjectSerializer
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('group', )
 
 
 class UserDetailAPIView(APIView):
