@@ -38,15 +38,6 @@ class UserProfile(models.Model):
         return '{} - {} - {}'.format(self.user, self.programme, self.batch)
 
 
-class Group(models.Model):
-    name = models.CharField(max_length=20, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return '{} - {}'.format(self.id, self.name)
-
-
 class Class(models.Model):
     name = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -54,16 +45,6 @@ class Class(models.Model):
 
     def __str__(self):
         return '{} - {}'.format(self.id, self.name)
-
-
-class ClassGroup(models.Model):
-    group = models.ForeignKey(Group, related_name='group_class', on_delete=models.CASCADE)
-    _class = models.ForeignKey(Class, related_name='class_group', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return '{} - {}'.format(self.group, self._class)
 
 
 class StudentProfile(models.Model):
@@ -164,25 +145,12 @@ class StudentFeedback(models.Model):
         return '{} - {} - {} - {}'.format(self.student, self.user, self.title, self.feedback)
 
 
-class GroupFeedback(models.Model):
-    group = models.ForeignKey(Group, related_name='class_feedback', on_delete=models.CASCADE)
+class ClassFeedback(models.Model):
+    _class = models.ForeignKey(Class, related_name='class_feedback', on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, related_name='subject_feedback', on_delete=models.CASCADE)
     feedback = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return "{} - {} - {}".format(self.group, self.subject, self.feedback)
-
-
-class GroupSubject(models.Model):
-    group = models.ForeignKey(Group, related_name='group_subject', on_delete=models.CASCADE)
-    subject = models.ForeignKey(Subject, related_name='subject_group', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return "{} - {}".format(self.group, self.subject)
 
 
 class Event(models.Model):

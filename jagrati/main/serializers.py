@@ -3,10 +3,9 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import (Attendance, Class, Event, Group, GroupFeedback,
-                     GroupSubject, Hobby, Skill, StudentFeedback,
-                     StudentProfile, Subject, Syllabus, UserHobby, UserProfile,
-                     UserSkill, )
+from .models import (Attendance, Class, ClassFeedback, StudentProfile,
+                     UserProfile, Hobby, UserHobby, Skill, UserSkill, Subject,
+                     Syllabus, StudentFeedback, Event, )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -59,6 +58,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
+    _class = ClassSerializer(Class.objects.all())
 
     def get_photo_url(self, obj):
         dp = obj.user.user_profile.display_picture
@@ -68,7 +68,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Attendance
-        fields = ('user', 'class_date', 'photo_url')
+        fields = ('user', '_class', 'class_date', 'photo_url')
 
 
 class HobbySerializer(serializers.ModelSerializer):
@@ -122,43 +122,28 @@ class StudentFeedbackSerializer(serializers.ModelSerializer):
         fields = ('student', 'user', 'title', 'feedback', )
 
 
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('id', 'name', )
-
-
-class GroupFeedbackSerializer(serializers.ModelSerializer):
-    group = GroupSerializer(Group.objects.all())
+class ClassFeedbackSerializer(serializers.ModelSerializer):
+    _class = ClassSerializer(Class.objects.all())
     subject = SubjectSerializer(Subject.objects.all())
 
     def create(self, validated_data):
         validated_data = self.initial_data
-        group_id = validated_data['group']['id']
+        class_id = validated_data['_class']['id']
         subject_id = validated_data['subject']['id']
         feedback = validated_data['feedback']
 
-        group_feedback_obj = self.Meta.model.objects.create(
-            group_id=group_id, subject_id=subject_id, feedback=feedback
+        class_feedback_obj = self.Meta.model.objects.create(
+            _class_id=class_id, subject_id=subject_id, feedback=feedback
         )
 
-        return group_feedback_obj
+        return class_feedback_obj
 
     class Meta:
-        model = GroupFeedback
-        fields = ('group', 'subject', 'feedback', 'created_at', )
+        model = ClassFeedback
+        fields = ('_class', 'subject', 'feedback', 'created_at', )
 
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('id', 'time', '_type', 'title', 'description', 'image', )
-
-
-class GroupSubjectSerializer(serializers.ModelSerializer):
-    group = GroupSerializer(Group.objects.all())
-    subject = SubjectSerializer(Subject.objects.all())
-
-    class Meta:
-        model = GroupSubject
-        fields = ('group', 'subject', )
