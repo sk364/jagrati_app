@@ -26,9 +26,23 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class ClassSerializer(serializers.ModelSerializer):
+    def get_num_active_students(self, obj):
+        """
+        :desc: Computes number of active students in a class.
+        :param: `obj` Model instance
+        :return: Count of active students
+        """
+
+        return StudentProfile.objects.filter(
+            user__is_active=True,
+            _class=obj
+        ).count()
+
+    num_active_students = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Class
-        fields = ('id', 'name', )
+        fields = ('id', 'name', 'num_active_students', )
 
 
 class StudentProfileSerializer(serializers.ModelSerializer):
@@ -37,7 +51,9 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
     def get_attendance_data(self, obj):
         """
-        :desc: Returns number of classes attended by user and total number of classes
+        :desc: Computes class attendance
+        :param: `obj` Model instance
+        :return: attendance information `dict`
         """
 
         user_attendance = obj.user.user_attendance.count()
@@ -60,15 +76,9 @@ class AttendanceSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
     _class = ClassSerializer(Class.objects.all())
 
-    def get_photo_url(self, obj):
-        dp = obj.user.user_profile.display_picture
-        return dp.url if dp else ''
-
-    photo_url = serializers.SerializerMethodField(read_only=True)
-
     class Meta:
         model = Attendance
-        fields = ('user', '_class', 'class_date', 'photo_url')
+        fields = ('user', '_class', 'class_date', )
 
 
 class HobbySerializer(serializers.ModelSerializer):
