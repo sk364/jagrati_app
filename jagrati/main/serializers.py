@@ -74,7 +74,6 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
-    _class = ClassSerializer(Class.objects.all())
 
     class Meta:
         model = Attendance
