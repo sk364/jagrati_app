@@ -78,7 +78,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Attendance
-        fields = ('user', '_class', 'class_date', )
+        fields = ('user', 'class_date', )
 
 
 class HobbySerializer(serializers.ModelSerializer):
