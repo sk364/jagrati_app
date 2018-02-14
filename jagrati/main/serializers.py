@@ -74,11 +74,10 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
-    _class = ClassSerializer(Class.objects.all())
 
     class Meta:
         model = Attendance
-        fields = ('user', '_class', 'class_date', )
+        fields = ('user', 'class_date', )
 
 
 class HobbySerializer(serializers.ModelSerializer):
