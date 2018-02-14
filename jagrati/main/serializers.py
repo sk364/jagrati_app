@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import (Attendance, Class, ClassFeedback, StudentProfile,
-                     UserProfile, Hobby, UserHobby, Skill, UserSkill, Subject,
-                     Syllabus, StudentFeedback, Event, )
+from .models import (Attendance, Class, ClassFeedback, Event, Hobby, Skill,
+                     StudentFeedback, StudentProfile, Subject, Syllabus,
+                     UserHobby, UserProfile, UserSkill, VolunteerSubject, )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -112,9 +112,18 @@ class UserSkillSerializer(serializers.ModelSerializer):
 
 
 class SubjectSerializer(serializers.ModelSerializer):
+    def get_num_volunteers(self, obj):
+        """
+        :desc: Computes number of volunteers teaching a subject.
+        """
+
+        return VolunteerSubject.objects.filter(subject=obj).count()
+
+    num_volunteers = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Subject
-        fields = ('id', 'name', )
+        fields = ('id', 'name', 'num_volunteers', )
 
 
 class SyllabusSerializer(serializers.ModelSerializer):

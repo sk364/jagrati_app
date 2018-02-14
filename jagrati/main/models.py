@@ -122,6 +122,14 @@ class Subject(models.Model):
         return '{} - {}'.format(self.id, self.name)
 
 
+class VolunteerSubject(models.Model):
+    volunteer = models.ForeignKey(User, related_name='volunteer_subject', on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, related_name='subject_volunteer', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} - {}'.format(self.volunteer, self.subject)
+
+
 class Syllabus(models.Model):
     _class = models.ForeignKey(Class, related_name='class_syllabus', on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, related_name='subject_syllabus', on_delete=models.CASCADE)
