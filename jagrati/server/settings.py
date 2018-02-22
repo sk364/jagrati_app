@@ -35,7 +35,7 @@ DEBUG = env('DEBUG')
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '')
 
-ALLOWED_HOSTS = ['localhost', '172.27.48.77']
+ALLOWED_HOSTS = ['*', 'localhost', '172.27.48.77']
 
 # Application definition
 
@@ -79,7 +79,7 @@ REST_FRAMEWORK = {
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     )
 }
 
@@ -172,6 +172,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LOGGING = {
     'version': 1,

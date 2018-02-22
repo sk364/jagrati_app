@@ -161,6 +161,22 @@ class ClassFeedbackSerializer(serializers.ModelSerializer):
         fields = ('_class', 'subject', 'feedback', 'created_at', )
 
 
+class VolunteerSubjectSerializer(serializers.ModelSerializer):
+    volunteer = UserSerializer(User.objects.all())
+    subject = SubjectSerializer(Subject.objects.all())
+
+    def get_discipline(self, obj):
+        if obj.volunteer.user_profile:
+            return obj.volunteer.user_profile.discipline
+        return ''
+
+    discipline = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = VolunteerSubject
+        fields = ('volunteer', 'subject', 'discipline', )
+
+
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event

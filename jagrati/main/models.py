@@ -19,6 +19,7 @@ class UserProfile(models.Model):
         ('CSE', 'CSE'),
         ('ME', 'ME'),
         ('ECE', 'ECE'),
+        ('Design', 'Design'),
     )
 
     user = models.OneToOneField(User, related_name='user_profile', on_delete=models.CASCADE)

@@ -8,11 +8,11 @@ from rest_framework.views import APIView
 from rest_framework_jwt.utils import jwt_decode_handler
 
 from .models import (Attendance, Class, ClassFeedback, Event, StudentFeedback, StudentProfile, Subject,
-                     Syllabus, UserHobby, UserProfile, UserSkill, )
+                     Syllabus, UserHobby, UserProfile, UserSkill, VolunteerSubject, )
 from .serializers import (AttendanceSerializer, ClassSerializer, ClassFeedbackSerializer,
                           EventSerializer, StudentFeedbackSerializer, StudentProfileSerializer,
-                          SyllabusSerializer, UserHobbySerializer, UserProfileSerializer,
-                          UserSerializer, UserSkillSerializer, )
+                          SubjectSerializer, SyllabusSerializer, UserHobbySerializer, UserProfileSerializer,
+                          UserSerializer, UserSkillSerializer, VolunteerSubjectSerializer, )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -199,6 +199,18 @@ class ClassFeedbackViewSet(viewsets.ModelViewSet):
 class StudentFeedbackViewSet(viewsets.ModelViewSet):
     queryset = StudentFeedback.objects.all()
     serializer_class = StudentFeedbackSerializer
+
+
+class SubjectViewSet(viewsets.ModelViewSet):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializer
+
+
+class VolunteerSubjectViewSet(viewsets.ModelViewSet):
+    queryset = VolunteerSubject.objects.all()
+    serializer_class = VolunteerSubjectSerializer
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('subject', 'volunteer', )
 
 
 class UserDetailAPIView(APIView):
