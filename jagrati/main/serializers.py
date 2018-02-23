@@ -172,9 +172,16 @@ class VolunteerSubjectSerializer(serializers.ModelSerializer):
 
     discipline = serializers.SerializerMethodField(read_only=True)
 
+    def get_display_picture(self, obj):
+        if obj.volunteer.user_profile:
+            return obj.volunteer.user_profile.display_picture.url
+        return ''
+
+    display_picture = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = VolunteerSubject
-        fields = ('volunteer', 'subject', 'discipline', )
+        fields = ('volunteer', 'subject', 'discipline', 'display_picture', )
 
 
 class EventSerializer(serializers.ModelSerializer):
