@@ -161,6 +161,9 @@ class ClassFeedback(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return '{} - {} - {}'.format(self._class, self.subject, self.feedback)
+
 
 class Event(models.Model):
     EVENT_TYPE_CHOICES = (
