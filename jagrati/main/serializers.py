@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name',
-                  'is_superuser', 'is_staff')
+                  'is_active', 'is_superuser', 'is_staff')
 
 
 # TODO: Add `attendance_count` to `fields`
@@ -42,7 +42,7 @@ class ClassSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Class
-        fields = ('id', 'name', 'num_active_students', )
+        fields = ('id', 'name', 'num_active_students', 'updated_at', )
 
 
 class StudentProfileSerializer(serializers.ModelSerializer):

@@ -132,6 +132,7 @@ SWAGGER_SETTINGS = {
             'name': 'Authorization'
         }
     },
+    'VALIDATOR_URL': False
 }
 
 

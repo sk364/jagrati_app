@@ -155,7 +155,7 @@ class SyllabusViewSet(viewsets.ModelViewSet):
 
 
 class ClassFeedbackViewSet(viewsets.ModelViewSet):
-    queryset = ClassFeedback.objects.all()
+    queryset = ClassFeedback.objects.all().order_by('-created_at')
     serializer_class = ClassFeedbackSerializer
     filter_backends = (filters.DjangoFilterBackend, )
     filter_fields = ('_class', )
