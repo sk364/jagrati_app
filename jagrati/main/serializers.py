@@ -187,7 +187,7 @@ class VolunteerSubjectSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('id', 'time', '_type', 'title', 'description', 'image', )
+        fields = ('id', 'time', '_type', 'title', 'description', 'image', 'created_at', )
 
 
 class JoinRequestSerializer(serializers.ModelSerializer):

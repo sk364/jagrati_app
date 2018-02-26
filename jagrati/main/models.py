@@ -175,7 +175,7 @@ class Event(models.Model):
     _type = models.CharField(max_length=7, choices=EVENT_TYPE_CHOICES)
     title = models.CharField(max_length=30)
     description = models.CharField(max_length=200)
-    image = models.ImageField(upload_to='uploads')
+    image = models.ImageField(upload_to='uploads', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
