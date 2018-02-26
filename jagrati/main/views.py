@@ -1,18 +1,27 @@
+import random
+import string
+
 import jwt
+
 from django.contrib.auth.models import User
 from django_filters import rest_framework as filters
 from rest_framework import status, viewsets
-from rest_framework.decorators import list_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_jwt.utils import jwt_decode_handler
 
-from .models import (Attendance, Class, ClassFeedback, Event, StudentFeedback, StudentProfile, Subject,
-                     Syllabus, UserHobby, UserProfile, UserSkill, VolunteerSubject, )
-from .serializers import (AttendanceSerializer, ClassSerializer, ClassFeedbackSerializer,
-                          EventSerializer, StudentFeedbackSerializer, StudentProfileSerializer,
-                          SubjectSerializer, SyllabusSerializer, UserHobbySerializer, UserProfileSerializer,
-                          UserSerializer, UserSkillSerializer, VolunteerSubjectSerializer, )
+from .models import (Attendance, Class, ClassFeedback, Event, JoinRequest,
+                     StudentFeedback, StudentProfile, Subject, Syllabus,
+                     UserHobby, UserProfile, UserSkill, VolunteerSubject, )
+from .permissions import IsAnonymousUserForPOST
+from .serializers import (AttendanceSerializer, ClassSerializer,
+                          ClassFeedbackSerializer, EventSerializer,
+                          JoinRequestSerializer, StudentFeedbackSerializer,
+                          StudentProfileSerializer, SubjectSerializer,
+                          SyllabusSerializer, UserHobbySerializer,
+                          UserProfileSerializer, UserSerializer,
+                          UserSkillSerializer, VolunteerSubjectSerializer, )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -213,10 +222,76 @@ class VolunteerSubjectViewSet(viewsets.ModelViewSet):
     filter_fields = ('subject', 'volunteer', )
 
 
+class JoinRequestViewSet(viewsets.ModelViewSet):
+    queryset = JoinRequest.objects.all()
+    serializer_class = JoinRequestSerializer
+    permission_classes = (IsAnonymousUserForPOST, )
+
+    @detail_route(methods=['put'])
+    def process(self, request, pk):
+        """
+        :desc: Processes the join request for approval/rejection
+        :body: `type` Process Type (Choices: "A" or "R")
+        """
+
+        process_type = request.data.get('type')
+
+        if process_type:
+            try:
+                join_req_obj = JoinRequest.objects.get(id=pk)
+            except JoinRequest.DoesNotExist:
+                return Response({
+                    'success': False,
+                    'detail': 'Invalid Join Request id.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            if process_type == 'A':
+                name = join_req_obj.name
+                email = join_req_obj.email
+
+                user = User.objects.create(
+                    username=email,
+                    first_name=name,
+                    last_name=name
+                )
+                user.set_password(self.get_random_password())
+                user.save()
+
+                # send mail with password
+
+                join_req_obj.status = 'APPROVED'
+                join_req_obj.save()
+            elif process_type == 'R':
+                # TODO: send mail for rejection
+                join_req_obj.status = 'REJECTED'
+                join_req_obj.save()
+            else:
+                return Response({
+                    'succes': False,
+                    'detail': 'Invalid value for paramter `type`.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({
+                'success': True,
+                'detail': 'Successfully updated.'
+            })
+        else:
+            return Response({
+                'success': False,
+                'detail': 'Missing `type` parameter.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_random_password(self, password_len=8):
+        return ''.join(
+            random.SystemRandom().choice(string.ascii_letters + string.digits)
+            for _ in range(password_len)
+        )
+
+
 class UserDetailAPIView(APIView):
     def get(self, request):
         """
         :desc: GET HTTP request handler to process jwt
+        :param: `jwt` JWT value
         """
 
         _jwt = request.query_params.get('jwt', None)

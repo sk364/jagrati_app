@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import (Attendance, Class, ClassFeedback, Event, Hobby, Skill,
-                     StudentFeedback, StudentProfile, Subject, Syllabus,
+from .models import (Attendance, Class, ClassFeedback, Event, Hobby, JoinRequest,
+                     Skill, StudentFeedback, StudentProfile, Subject, Syllabus,
                      UserHobby, UserProfile, UserSkill, VolunteerSubject, )
 
 
@@ -188,3 +188,10 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('id', 'time', '_type', 'title', 'description', 'image', )
+
+
+class JoinRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JoinRequest
+        fields = ('id', 'email', 'name', 'status', 'created_at', )
+        read_only_fields = ('status', )

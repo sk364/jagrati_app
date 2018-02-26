@@ -191,3 +191,20 @@ class VolunteerClass(models.Model):
 
     def __str__(self):
         return '{} - {}'.format(self.volunteer, self._class)
+
+
+class JoinRequest(models.Model):
+    STATUS_CHOICES = (
+        ('PENDING', 'PENDING'),
+        ('APPROVED', 'APPROVED'),
+        ('REJECTED', 'REJECTED')
+    )
+
+    email = models.CharField(max_length=50)
+    name = models.CharField(max_length=50)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '{} - {} - {}'.format(self.email, self.name, self.status)
