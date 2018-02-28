@@ -2,8 +2,11 @@ from __future__ import unicode_literals
 
 import datetime
 
+from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class UserProfile(models.Model):
@@ -208,3 +211,27 @@ class JoinRequest(models.Model):
 
     def __str__(self):
         return '{} - {} - {}'.format(self.email, self.name, self.status)
+
+
+class Notification(models.Model):
+    to_only_admin = models.BooleanField(default=True)
+    _type = models.CharField(max_length=20)
+    content = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '{} - {} - {}'.format(self._type, self.content, self.created_at)
+
+
+@receiver(post_save, sender=JoinRequest)
+def send_join_request_mail(sender, instance, **kwargs):
+    created = kwargs.get('created', False)
+
+    if created:
+        subject = 'New Join Request!'
+        message = 'New Join Request by {email}'.format(email=instance.email)
+        from_email = 'support@jagrati.com'
+        to_email = ['sachinkukreja@iiitdmj.ac.in']
+
+        send_mail(subject, message, from_email, to_email, fail_silently=False)

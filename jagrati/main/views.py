@@ -1,15 +1,12 @@
 import random
 import string
 
-import jwt
-
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django_filters import rest_framework as filters
 from rest_framework import status, viewsets
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_jwt.utils import jwt_decode_handler
 
 from .models import (Attendance, Class, ClassFeedback, Event, JoinRequest,
                      StudentFeedback, StudentProfile, Subject, Syllabus,
@@ -253,15 +250,42 @@ class JoinRequestViewSet(viewsets.ModelViewSet):
                     first_name=name,
                     last_name=name
                 )
-                user.set_password(self.get_random_password())
+                password = self.get_random_password()
+                user.set_password(password)
                 user.save()
 
                 # send mail with password
+                subject = 'Welcome To Jagrati !'
+                message = 'Here are your account details - \n\
+                           Username: {username}\n\
+                           Password: {password}'.format(username=email, password=password)
+                from_email = 'support@jagrati.com'
+                to_email = [email]
+                send_mail(
+                    subject,
+                    message,
+                    from_email,
+                    to_email,
+                    fail_silently=False
+                )
 
                 join_req_obj.status = 'APPROVED'
                 join_req_obj.save()
             elif process_type == 'R':
-                # TODO: send mail for rejection
+                # send mail for rejection
+                subject = 'Message from Jagrati !'
+                message = 'Sorry, we can\'t take you in our team.'
+                from_email = 'support@jagrati.com'
+                to_email = [email]
+                send_mail(
+                    subject,
+                    message,
+                    from_email,
+                    to_email,
+                    fail_silently=False
+                )
+
+
                 join_req_obj.status = 'REJECTED'
                 join_req_obj.save()
             else:
@@ -285,37 +309,3 @@ class JoinRequestViewSet(viewsets.ModelViewSet):
             random.SystemRandom().choice(string.ascii_letters + string.digits)
             for _ in range(password_len)
         )
-
-
-class UserDetailAPIView(APIView):
-    def get(self, request):
-        """
-        :desc: GET HTTP request handler to process jwt
-        :param: `jwt` JWT value
-        """
-
-        _jwt = request.query_params.get('jwt', None)
-
-        if _jwt is None:
-            return Response({
-                'success': False,
-                'detail': 'Missing jwt query param'
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            payload = jwt_decode_handler(_jwt)
-        except (jwt.ExpiredSignature, jwt.DecodeError, jwt.InvalidTokenError):
-            return Response({
-                'detail': 'Token is invalid',
-                'success': False
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        user_id = payload['user_id']
-        user = User.objects.get(id=user_id)
-        is_admin = user.is_superuser
-
-        return Response({
-            'user_id': user_id,
-            'is_admin': is_admin,
-            'success': True
-        })
