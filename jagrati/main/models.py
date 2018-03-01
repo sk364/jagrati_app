@@ -182,6 +182,9 @@ class Event(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ('-created_at', )
+
     def __str__(self):
         return '{} - {} - {}'.format(self.title, self.time, self._type)
 
@@ -208,6 +211,9 @@ class JoinRequest(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-created_at', )
 
     def __str__(self):
         return '{} - {} - {}'.format(self.email, self.name, self.status)
