@@ -241,57 +241,64 @@ class JoinRequestViewSet(viewsets.ModelViewSet):
                     'success': False,
                     'detail': 'Invalid Join Request id.'
                 }, status=status.HTTP_400_BAD_REQUEST)
-            if process_type == 'A':
-                name = join_req_obj.name
-                email = join_req_obj.email
 
-                user = User.objects.create(
-                    username=email,
-                    first_name=name,
-                    last_name=name
-                )
-                password = self.get_random_password()
-                user.set_password(password)
-                user.save()
+            if join_req_obj.status == 'PENDING':
+                if process_type == 'A':
+                    name = join_req_obj.name
+                    email = join_req_obj.email
 
-                # send mail with password
-                subject = 'Welcome To Jagrati !'
-                message = 'Here are your account details - \n\
-                           Username: {username}\n\
-                           Password: {password}'.format(username=email, password=password)
-                from_email = 'support@jagrati.com'
-                to_email = [email]
-                send_mail(
-                    subject,
-                    message,
-                    from_email,
-                    to_email,
-                    fail_silently=False
-                )
+                    user = User.objects.create(
+                        username=email,
+                        first_name=name,
+                        last_name=name
+                    )
+                    password = self.get_random_password()
+                    user.set_password(password)
+                    user.save()
 
-                join_req_obj.status = 'APPROVED'
-                join_req_obj.save()
-            elif process_type == 'R':
-                # send mail for rejection
-                subject = 'Message from Jagrati !'
-                message = 'Sorry, we can\'t take you in our team.'
-                from_email = 'support@jagrati.com'
-                to_email = [email]
-                send_mail(
-                    subject,
-                    message,
-                    from_email,
-                    to_email,
-                    fail_silently=False
-                )
+                    # send mail with password
+                    subject = 'Welcome To Jagrati !'
+                    message = 'Here are your account details - \n\
+                               Username: {username}\n\
+                               Password: {password}'.format(username=email, password=password)
+                    from_email = 'support@jagrati.com'
+                    to_email = [email]
+                    send_mail(
+                        subject,
+                        message,
+                        from_email,
+                        to_email,
+                        fail_silently=False
+                    )
+
+                    join_req_obj.status = 'APPROVED'
+                    join_req_obj.save()
+                elif process_type == 'R':
+                    # send mail for rejection
+                    subject = 'Message from Jagrati !'
+                    message = 'Sorry, we can\'t take you in our team.'
+                    from_email = 'support@jagrati.com'
+                    to_email = [email]
+                    send_mail(
+                        subject,
+                        message,
+                        from_email,
+                        to_email,
+                        fail_silently=False
+                    )
 
 
-                join_req_obj.status = 'REJECTED'
-                join_req_obj.save()
+                    join_req_obj.status = 'REJECTED'
+                    join_req_obj.save()
+                else:
+                    return Response({
+                        'succes': False,
+                        'detail': 'Invalid value for paramter `type`.'
+                    }, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({
-                    'succes': False,
-                    'detail': 'Invalid value for paramter `type`.'
+                    'success': False,
+                    'detail': 'Already processed'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             return Response({
