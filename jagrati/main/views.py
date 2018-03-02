@@ -242,11 +242,11 @@ class JoinRequestViewSet(viewsets.ModelViewSet):
                     'detail': 'Invalid Join Request id.'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
+            name = join_req_obj.name
+            email = join_req_obj.email
+
             if join_req_obj.status == 'PENDING':
                 if process_type == 'A':
-                    name = join_req_obj.name
-                    email = join_req_obj.email
-
                     user = User.objects.create(
                         username=email,
                         first_name=name,

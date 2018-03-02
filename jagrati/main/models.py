@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import datetime
 
 from django.core.mail import send_mail
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
@@ -238,6 +239,6 @@ def send_join_request_mail(sender, instance, **kwargs):
         subject = 'New Join Request!'
         message = 'New Join Request by {email}'.format(email=instance.email)
         from_email = 'support@jagrati.com'
-        to_email = ['sachinkukreja@iiitdmj.ac.in']
+        to_email = [settings.EMAIL_HOST_USER]
 
         send_mail(subject, message, from_email, to_email, fail_silently=False)
