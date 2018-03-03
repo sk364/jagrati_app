@@ -134,9 +134,19 @@ class AttendaceViewSet(viewsets.ModelViewSet):
         })
 
 
+class EventFilterSet(filters.FilterSet):
+    created_at__gt = filters.IsoDateTimeFilter(name='created_at', lookup_expr='gt')
+
+    class Meta:
+        model = Event
+        fields = ('created_at__gt', )
+
+
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_class = EventFilterSet
 
 
 class UserHobbyViewSet(viewsets.ModelViewSet):
