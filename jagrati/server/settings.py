@@ -35,7 +35,7 @@ DEBUG = env('DEBUG')
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '')
 
-ALLOWED_HOSTS = ['*', 'localhost', '172.27.48.77']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -68,7 +68,7 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
-    'http://172.27.48.77:3000'
+    '*'
 )
 CORS_ALLOW_HEADERS = default_headers + (
     'enctype',
