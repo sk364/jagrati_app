@@ -191,6 +191,16 @@ class EventSerializer(serializers.ModelSerializer):
 
 
 class JoinRequestSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        super().validate(data)
+        email = data['email']
+
+        try:
+            user = User.objects.get(username=email)
+            raise serializers.ValidationError("User with {} already exists".format(email))
+        except User.DoesNotExist:
+            return data
+
     class Meta:
         model = JoinRequest
         fields = ('id', 'email', 'name', 'status', 'created_at', )
