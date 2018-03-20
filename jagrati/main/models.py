@@ -35,7 +35,7 @@ class UserProfile(models.Model):
     address = models.CharField(max_length=50, blank=True, null=True)
     status = models.CharField(max_length=128, blank=True, null=True)
     is_contact_hidden = models.BooleanField(default=False)
-    display_picture = models.ImageField(upload_to='uploads/')
+    display_picture = models.ImageField(upload_to='uploads/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
