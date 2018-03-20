@@ -177,40 +177,6 @@ class ClassFeedbackViewSet(viewsets.ModelViewSet):
     filter_fields = ('_class', )
     lookup_field = '_class__id'
 
-    def create(self, request):
-        data = request.data
-        _class = data.get('_class', None)
-        subject = data.get('subject', None)
-        feedback = data.get('feedback', None)
-        is_invalid_data = True
-
-        if _class is not None and subject is not None and feedback is not None:
-            is_invalid_data = False
-            _class_id = _class.get('id', None)
-            subject_id = subject.get('id', None)
-
-            if _class_id is not None and subject_id is not None:
-                try:
-                    Class.objects.get(id=_class_id)
-                except Class.DoesNotExist:
-                    is_invalid_data = True
-
-                try:
-                    Subject.objects.get(id=subject_id)
-                except Subject.DoesNotExist:
-                    is_invalid_data = True
-
-                if is_invalid_data is False:
-                    return super(ClassFeedbackViewSet, self).create(request)
-
-            is_invalid_data = True
-
-        if is_invalid_data:
-            return Response({
-                'success': False,
-                'detail': 'Data is invalid'
-            }, status=status.HTTP_400_BAD_REQUEST)
-
 
 class StudentFeedbackViewSet(viewsets.ModelViewSet):
     queryset = StudentFeedback.objects.all()

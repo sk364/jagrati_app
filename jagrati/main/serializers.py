@@ -146,24 +146,22 @@ class StudentFeedbackSerializer(serializers.ModelSerializer):
 
 
 class ClassFeedbackSerializer(serializers.ModelSerializer):
-    _class = ClassSerializer(Class.objects.all())
-    subject = SubjectSerializer(Subject.objects.all())
-
-    def create(self, validated_data):
-        validated_data = self.initial_data
-        class_id = validated_data['_class']['id']
-        subject_id = validated_data['subject']['id']
-        feedback = validated_data['feedback']
-
-        class_feedback_obj = self.Meta.model.objects.create(
-            _class_id=class_id, subject_id=subject_id, feedback=feedback
-        )
-
-        return class_feedback_obj
+    _class = ClassSerializer(Class.objects.all(), read_only=True)
+    _class_id = serializers.PrimaryKeyRelatedField(
+        queryset=Class.objects.all(),
+        source='_class',
+        write_only=True
+    )
+    subject = SubjectSerializer(Subject.objects.all(), read_only=True)
+    subject_id = serializers.PrimaryKeyRelatedField(
+        queryset=Subject.objects.all(),
+        source='subject',
+        write_only=True
+    )
 
     class Meta:
         model = ClassFeedback
-        fields = ('_class', 'subject', 'feedback', 'created_at', )
+        fields = ('_class', '_class_id', 'subject', 'subject_id', 'feedback', 'created_at', )
 
 
 class VolunteerSubjectSerializer(serializers.ModelSerializer):
