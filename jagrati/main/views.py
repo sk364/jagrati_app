@@ -37,7 +37,7 @@ class VolunteerProfileViewSet(viewsets.ModelViewSet):
     lookup_field = 'user__id'
 
     def get_queryset(self):
-        return UserProfile.objects.filter(user__is_staff=True)
+        return UserProfile.objects.filter(user__is_staff=True, user__is_superuser=False)
 
 
 class StudentProfileViewSet(viewsets.ModelViewSet):

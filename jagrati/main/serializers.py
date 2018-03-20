@@ -17,11 +17,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 # TODO: Add `attendance_count` to `fields`
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(User.objects.all())
+    user = UserSerializer(User.objects.filter(is_staff=True, is_superuser=False), read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        source='user',
+        queryset=User.objects.filter(is_staff=True, is_superuser=False),
+        write_only=True
+    )
 
     class Meta:
         model = UserProfile
-        fields = ('user', 'programme', 'discipline', 'dob', 'batch', 'contact',
+        fields = ('user', 'user_id', 'programme', 'discipline', 'dob', 'batch', 'contact',
                   'address', 'status', 'is_contact_hidden', 'display_picture', )
 
 
