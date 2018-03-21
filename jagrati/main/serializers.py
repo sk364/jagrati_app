@@ -193,8 +193,18 @@ class ClassFeedbackSerializer(serializers.ModelSerializer):
 
 
 class VolunteerSubjectSerializer(serializers.ModelSerializer):
-    volunteer = UserSerializer(User.objects.all())
-    subject = SubjectSerializer(Subject.objects.all())
+    volunteer = UserSerializer(User.objects.filter(is_staff=True, is_superuser=False), read_only=True)
+    volunteer_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.filter(is_staff=True, is_superuser=False),
+        source='volunteer',
+        write_only=True
+    )
+    subject = SubjectSerializer(Subject.objects.all(), read_only=True)
+    subject_id = serializers.PrimaryKeyRelatedField(
+        queryset=Subject.objects.all(),
+        source='subject',
+        write_only=True
+    )
 
     def get_discipline(self, obj):
         if obj.volunteer.user_profile:
@@ -204,7 +214,7 @@ class VolunteerSubjectSerializer(serializers.ModelSerializer):
     discipline = serializers.SerializerMethodField(read_only=True)
 
     def get_display_picture(self, obj):
-        if obj.volunteer.user_profile:
+        if obj.volunteer.user_profile and obj.volunteer.user_profile.display_picture:
             return obj.volunteer.user_profile.display_picture.url
         return ''
 
@@ -212,7 +222,7 @@ class VolunteerSubjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VolunteerSubject
-        fields = ('volunteer', 'subject', 'discipline', 'display_picture', )
+        fields = ('volunteer', 'volunteer_id', 'subject', 'subject_id', 'discipline', 'display_picture', )
 
 
 class EventSerializer(serializers.ModelSerializer):
