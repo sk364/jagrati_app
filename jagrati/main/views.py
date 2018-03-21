@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from .models import (Attendance, Class, ClassFeedback, Event, JoinRequest,
                      StudentFeedback, StudentProfile, Subject, Syllabus,
                      UserHobby, UserProfile, UserSkill, VolunteerSubject, )
-from .permissions import IsAnonymousUserForPOST
+from .permissions import IsAnonymousUserForPOST, IsOwner
 from .serializers import (AttendanceSerializer, ClassSerializer,
                           ClassFeedbackSerializer, EventSerializer,
                           JoinRequestSerializer, StudentFeedbackSerializer,
@@ -35,9 +35,29 @@ class VolunteerProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     lookup_field = 'user__id'
+    permission_classes = (IsOwner, )
 
     def get_queryset(self):
         return UserProfile.objects.filter(user__is_staff=True, user__is_superuser=False)
+
+    def create(self, request):
+        data = request.data
+        user_id = data.get('user_id')
+
+        if user_id is not None:
+            user_profile = UserProfile.objects.filter(user_id=user_id).first()
+            if user_profile is None:
+                if request.user.id == user_id:
+                    return super(VolunteerProfileViewSet, self).create(request)
+            else:
+                return Response({
+                    'success': False,
+                    'detail': 'You already have a profile.'
+                })
+        return Response({
+            'success': False,
+            'detail': 'You do not have permission to perform this action.'
+        })
 
 
 class StudentProfileViewSet(viewsets.ModelViewSet):
