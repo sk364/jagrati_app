@@ -131,12 +131,22 @@ class SubjectSerializer(serializers.ModelSerializer):
 
 
 class SyllabusSerializer(serializers.ModelSerializer):
-    _class = ClassSerializer(Class.objects.all())
-    subject = SubjectSerializer(Subject.objects.all())
+    _class = ClassSerializer(Class.objects.all(), read_only=True)
+    _class_id = serializers.PrimaryKeyRelatedField(
+        queryset=Class.objects.all(),
+        source='_class',
+        write_only=True
+    )
+    subject = SubjectSerializer(Subject.objects.all(), read_only=True)
+    subject_id = serializers.PrimaryKeyRelatedField(
+        queryset=Subject.objects.all(),
+        source='subject',
+        write_only=True
+    )
 
     class Meta:
         model = Syllabus
-        fields = ('_class', 'subject', 'content', )
+        fields = ('_class', '_class_id', 'subject', 'subject_id', 'content', )
 
 
 class StudentFeedbackSerializer(serializers.ModelSerializer):
