@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django_filters import rest_framework as filters
 from rest_framework import status, viewsets
 from rest_framework.decorators import detail_route, list_route
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import (Attendance, Class, ClassFeedback, Event, JoinRequest,
@@ -35,7 +36,7 @@ class VolunteerProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     lookup_field = 'user__id'
-    permission_classes = (IsOwner, )
+    permission_classes = (IsAuthenticated, IsOwner, )
 
     def get_queryset(self):
         return UserProfile.objects.filter(user__is_staff=True, user__is_superuser=False)
