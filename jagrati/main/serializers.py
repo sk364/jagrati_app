@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import serializers
 
 from .models import (Attendance, Class, ClassFeedback, Event, Hobby, JoinRequest,
@@ -110,12 +111,22 @@ class HobbySerializer(serializers.ModelSerializer):
 
 
 class UserHobbySerializer(serializers.ModelSerializer):
-    user = UserSerializer(User.objects.all())
-    hobby = HobbySerializer(Hobby.objects.all())
+    user = UserSerializer(User.objects.all(), read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        source='user',
+        write_only=True
+    )
+    hobby = HobbySerializer(Hobby.objects.all(), read_only=True)
+    hobby_id = serializers.PrimaryKeyRelatedField(
+        queryset=Hobby.objects.all(),
+        source='hobby',
+        write_only=True
+    )
 
     class Meta:
         model = UserHobby
-        fields = ('user', 'hobby', )
+        fields = ('user', 'user_id', 'hobby', 'hobby_id', )
 
 
 class SkillSerializer(serializers.ModelSerializer):
@@ -125,12 +136,22 @@ class SkillSerializer(serializers.ModelSerializer):
 
 
 class UserSkillSerializer(serializers.ModelSerializer):
-    user = UserSerializer(User.objects.all())
-    skill = SkillSerializer(Skill.objects.all())
+    user = UserSerializer(User.objects.all(), read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        source='user',
+        write_only=True
+    )
+    skill = SkillSerializer(Skill.objects.all(), read_only=True)
+    skill_id = serializers.PrimaryKeyRelatedField(
+        queryset=Skill.objects.all(),
+        source='skill',
+        write_only=True
+    )
 
     class Meta:
         model = UserSkill
-        fields = ('user', 'skill', )
+        fields = ('user', 'user_id', 'skill', 'skill_id', )
 
 
 class SubjectSerializer(serializers.ModelSerializer):
@@ -168,9 +189,23 @@ class SyllabusSerializer(serializers.ModelSerializer):
 
 
 class StudentFeedbackSerializer(serializers.ModelSerializer):
+    student = UserSerializer(User.objects.filter(is_staff=False, is_superuser=False), read_only=True)
+    student_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.filter(is_staff=False, is_superuser=False),
+        source='student',
+        write_only=True
+    )
+
+    user = UserSerializer(User.objects.filter(Q(Q(is_staff=True) | Q(is_superuser=True))), read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.filter(Q(Q(is_staff=True) | Q(is_superuser=True))),
+        source='user',
+        write_only=True
+    )
+
     class Meta:
         model = StudentFeedback
-        fields = ('student', 'user', 'title', 'feedback', )
+        fields = ('student', 'student_id', 'user', 'user_id', 'title', 'feedback', )
 
 
 class ClassFeedbackSerializer(serializers.ModelSerializer):
