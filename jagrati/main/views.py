@@ -95,40 +95,6 @@ class AttendaceViewSet(viewsets.ModelViewSet):
         return attendance_objs, errors
 
 
-    def create(self, request):
-        """
-        Request Data:
-          - `student_ids` (list of integers [eg: [1,2,3]], required)
-        Response: dict
-        """
-
-        student_ids = request.data.get('student_ids', None)
-        # class_date = request.data.get('class_date', None)
-
-        if student_ids is None:
-            return Response({
-                'success': False,
-                'detail': 'Missing Required Arguments.'
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-
-        attendance_objs, errors = self.get_attendance_objs(student_ids)
-
-        if attendance_objs:
-            Attendance.objects.bulk_create(attendance_objs)
-
-        if errors == []:
-            return Response({
-                'success': True,
-                'detail': 'Class Attendance Saved.'
-            }, status=status.HTTP_201_CREATED)
-        else:
-            return Response({
-                'success': False,
-                'detail': 'Unsaved student ids - {}'.format(', '.join(errors))
-            }, status=status.HTTP_201_CREATED)
-
-
     @list_route(methods=['get'])
     def class_dates(self, request):
         """

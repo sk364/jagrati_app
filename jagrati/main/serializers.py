@@ -78,11 +78,29 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
-    user = UserSerializer(User.objects.all())
+    user = UserSerializer(User.objects.all(), read_only=True)
+    student_ids = serializers.ListField(
+        child = serializers.PrimaryKeyRelatedField(
+            queryset=User.objects.filter(is_staff=False, is_superuser=False),
+            write_only=True
+        ),
+        write_only=True
+    )
+
+    def create(self, validated_data):
+        students = validated_data['student_ids']
+        attendance_objs = []
+
+        for student in students:
+            attendance_objs.append(self.Meta.model(user=student))
+
+        self.Meta.model.objects.bulk_create(attendance_objs)
+        return attendance_objs[0]
 
     class Meta:
         model = Attendance
-        fields = ('user', 'class_date', )
+        fields = ('user', 'class_date', 'student_ids', )
+        read_only_fields = ('user', 'class_date', )
 
 
 class HobbySerializer(serializers.ModelSerializer):
