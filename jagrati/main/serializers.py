@@ -16,7 +16,6 @@ class UserSerializer(serializers.ModelSerializer):
                   'is_active', 'is_superuser', 'is_staff')
 
 
-# TODO: Add `attendance_count` to `fields`
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.filter(is_staff=True, is_superuser=False), read_only=True)
     user_id = serializers.PrimaryKeyRelatedField(
@@ -25,10 +24,27 @@ class UserProfileSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
+    def get_attendance(self, obj):
+        """
+        :desc: Computes class attendance of user
+        :param: `obj` Model instance
+        :return: attendance information `dict`
+        """
+
+        user_attendance = obj.user.user_attendance.count()
+        total_classes = Attendance.objects.values('class_date').distinct().count()
+
+        return {
+            'attendance': user_attendance,
+            'total_classes': total_classes
+        }
+
+    attendance = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = UserProfile
         fields = ('user', 'user_id', 'programme', 'discipline', 'dob', 'batch', 'contact',
-                  'address', 'status', 'is_contact_hidden', 'display_picture', )
+                  'address', 'status', 'is_contact_hidden', 'display_picture', 'attendance', )
 
 
 class ClassSerializer(serializers.ModelSerializer):
@@ -52,12 +68,22 @@ class ClassSerializer(serializers.ModelSerializer):
 
 
 class StudentProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(User.objects.all())
-    _class = ClassSerializer(Class.objects.all())
+    user = UserSerializer(User.objects.filter(is_staff=False, is_superuser=False), read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        source='user',
+        queryset=User.objects.filter(is_staff=False, is_superuser=False),
+        write_only=True
+    )
+    _class = ClassSerializer(Class.objects.all(), read_only=True)
+    _class_id = serializers.PrimaryKeyRelatedField(
+        source='_class',
+        queryset=Class.objects.all(),
+        write_only=True
+    )
 
-    def get_attendance_data(self, obj):
+    def get_attendance(self, obj):
         """
-        :desc: Computes class attendance
+        :desc: Computes class attendance of user
         :param: `obj` Model instance
         :return: attendance information `dict`
         """
@@ -70,12 +96,12 @@ class StudentProfileSerializer(serializers.ModelSerializer):
             'total_classes': total_classes
         }
 
-    attendance_data = serializers.SerializerMethodField(read_only=True)
+    attendance = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = StudentProfile
-        fields = ('user', '_class', 'village', 'sex', 'dob', 'mother', 'father',
-                  'contact', 'emergency_contact', 'display_picture', 'attendance_data', )
+        fields = ('user', 'user_id', '_class', '_class_id', 'village', 'sex', 'dob', 'mother', 'father',
+                  'contact', 'emergency_contact', 'display_picture', 'attendance', )
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
