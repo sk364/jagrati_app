@@ -21,6 +21,8 @@ from .serializers import (AttendanceSerializer, ClassSerializer,
                           UserProfileSerializer, UserSerializer,
                           UserSkillSerializer, VolunteerSubjectSerializer, )
 
+DEFAULT_REJECTION_MSG = 'Sorry, we can\'t take you in our team.'
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -37,6 +39,8 @@ class VolunteerProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserProfileSerializer
     lookup_field = 'user__id'
     permission_classes = (IsAuthenticated, IsOwner, )
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('user__is_active', )
 
     def get_queryset(self):
         return UserProfile.objects.filter(user__is_staff=True, user__is_superuser=False)
@@ -192,6 +196,7 @@ class JoinRequestViewSet(viewsets.ModelViewSet):
         """
         :desc: Processes the join request for approval/rejection
         :body: `type` Process Type (Choices: "A" or "R")
+               `message` Rejection message
         """
 
         process_type = request.data.get('type')
@@ -239,7 +244,7 @@ class JoinRequestViewSet(viewsets.ModelViewSet):
                 elif process_type == 'R':
                     # send mail for rejection
                     subject = 'Message from Jagrati !'
-                    message = 'Sorry, we can\'t take you in our team.'
+                    message = request.data.get('message') or DEFAULT_REJECTION_MSG
                     from_email = 'support@jagrati.com'
                     to_email = [email]
                     send_mail(
@@ -249,7 +254,6 @@ class JoinRequestViewSet(viewsets.ModelViewSet):
                         to_email,
                         fail_silently=False
                     )
-
 
                     join_req_obj.status = 'REJECTED'
                     join_req_obj.save()
