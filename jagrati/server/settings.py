@@ -50,7 +50,12 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'corsheaders',
     'django_filters',
+    'django_crontab',
     'main',
+]
+
+CRONJOBS = [
+    ('58 23 * * *', 'main.crons.update_inactive_students'),
 ]
 
 MIDDLEWARE = [
