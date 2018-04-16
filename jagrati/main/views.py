@@ -10,14 +10,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import (Attendance, Class, ClassFeedback, Event, JoinRequest,
-                     StudentFeedback, StudentProfile, Subject, Syllabus,
-                     UserHobby, UserProfile, UserSkill, VolunteerSubject, )
+                     Notification, StudentFeedback, StudentProfile, Subject,
+                     Syllabus, UserHobby, UserNotification, UserProfile,
+                     UserSkill, VolunteerSubject, )
 from .permissions import IsAnonymousUserForPOST, IsOwner
 from .serializers import (AttendanceSerializer, ClassSerializer,
                           ClassFeedbackSerializer, EventSerializer,
-                          JoinRequestSerializer, StudentFeedbackSerializer,
-                          StudentProfileSerializer, SubjectSerializer,
-                          SyllabusSerializer, UserHobbySerializer,
+                          JoinRequestSerializer, NotificationSerializer,
+                          StudentFeedbackSerializer, StudentProfileSerializer,
+                          SubjectSerializer, SyllabusSerializer,
+                          UserHobbySerializer, UserNotificationSerializer,
                           UserProfileSerializer, UserSerializer,
                           UserSkillSerializer, VolunteerSubjectSerializer, )
 
@@ -283,3 +285,13 @@ class JoinRequestViewSet(viewsets.ModelViewSet):
             random.SystemRandom().choice(string.ascii_letters + string.digits)
             for _ in range(password_len)
         )
+
+
+class UserNotificationViewSet(viewsets.ModelViewSet):
+    queryset = UserNotification.objects.all()
+    serializer_class = UserNotificationSerializer
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('is_seen', )
+
+    def get_queryset(self):
+        return UserNotification.objects.filter(user=self.request.user)

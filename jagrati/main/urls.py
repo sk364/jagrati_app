@@ -4,8 +4,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (AttendaceViewSet, ClassViewSet, ClassFeedbackViewSet,
                     JoinRequestViewSet, EventViewSet, StudentFeedbackViewSet,
                     StudentProfileViewSet, SubjectViewSet, SyllabusViewSet,
-                    UserHobbyViewSet, UserSkillViewSet, UserViewSet,
-                    VolunteerProfileViewSet, VolunteerSubjectViewSet, )
+                    UserHobbyViewSet, UserNotificationViewSet, UserSkillViewSet,
+                    UserViewSet, VolunteerProfileViewSet, VolunteerSubjectViewSet, )
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -22,5 +22,6 @@ router.register(r'student_feedback', StudentFeedbackViewSet)
 router.register(r'subjects', SubjectViewSet)
 router.register(r'department', VolunteerSubjectViewSet)
 router.register(r'join_requests', JoinRequestViewSet)
+router.register(r'user_notifications', UserNotificationViewSet)
 
 urlpatterns = router.urls

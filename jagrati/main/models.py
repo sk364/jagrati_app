@@ -232,6 +232,15 @@ class Notification(models.Model):
         return '{} - {} - {}'.format(self._type, self.content, self.created_at)
 
 
+class UserNotification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    notification = models.ForeignKey(Notification, on_delete=models.CASCADE)
+    is_seen = models.BooleanField(default=False)
+
+    def __str__(self):
+        return '{} - {} - {}'.format(self.user, self.notification, self.is_seen)
+
+
 def create_notification(obj, _type, content, to_only_admin):
     """
     :desc: Creates a notification object.
@@ -241,12 +250,21 @@ def create_notification(obj, _type, content, to_only_admin):
     # display when the event will happen rather than when event was created
     created_at = obj.created_at if _type != 'event' else obj.time
 
-    Notification.objects.create(
+    notification = Notification.objects.create(
         _type=_type,
         content=content,
         to_only_admin=to_only_admin,
         display_date=obj.created_at
     )
+
+    if to_only_admin:
+        filters = {'is_staff': False, 'is_superuser': True}
+    else:
+        filters = {'is_staff': True, 'is_superuser': False}
+
+    users = User.objects.filter(**filters)
+    user_notifications = [UserNotification.objects.create(user=user, notification=notification)
+                          for user in users]
 
 
 @receiver(post_save, sender=JoinRequest)

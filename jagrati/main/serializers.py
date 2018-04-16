@@ -5,8 +5,9 @@ from django.db.models import Q
 from rest_framework import serializers
 
 from .models import (Attendance, Class, ClassFeedback, Event, Hobby, JoinRequest,
-                     Skill, StudentFeedback, StudentProfile, Subject, Syllabus,
-                     UserHobby, UserProfile, UserSkill, VolunteerSubject, )
+                     Notification, Skill, StudentFeedback, StudentProfile, Subject,
+                     Syllabus, UserHobby, UserNotification, UserProfile, UserSkill,
+                     VolunteerSubject, )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -307,3 +308,18 @@ class JoinRequestSerializer(serializers.ModelSerializer):
         model = JoinRequest
         fields = ('id', 'email', 'name', 'status', 'created_at', )
         read_only_fields = ('status', )
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ('id', '_type', 'content', 'to_only_admin', 'display_date', )
+
+
+class UserNotificationSerializer(serializers.ModelSerializer):
+    user = UserSerializer(User.objects.all(), read_only=True)
+    notification = NotificationSerializer(Notification.objects.all(), read_only=True)
+
+    class Meta:
+        model = UserNotification
+        fields = ('user', 'notification', 'is_seen')
