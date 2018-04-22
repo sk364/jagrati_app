@@ -313,7 +313,7 @@ class JoinRequestSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ('id', '_type', 'content', 'to_only_admin', 'display_date', )
+        fields = ('id', '_type', 'content', 'instance_id', 'display_date', )
 
 
 class UserNotificationSerializer(serializers.ModelSerializer):

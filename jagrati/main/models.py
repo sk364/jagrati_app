@@ -225,6 +225,7 @@ class Notification(models.Model):
     _type = models.CharField(max_length=20)
     content = models.CharField(max_length=100)
     display_date = models.DateTimeField(default=datetime.datetime.now)
+    instance_id = models.IntegerField(default=-1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -241,7 +242,7 @@ class UserNotification(models.Model):
         return '{} - {} - {}'.format(self.user, self.notification, self.is_seen)
 
 
-def create_notification(obj, _type, content, to_only_admin):
+def create_notification(obj, _type, content, to_only_admin, instance_id):
     """
     :desc: Creates a notification object.
     :param: `obj` Model instance
@@ -254,7 +255,8 @@ def create_notification(obj, _type, content, to_only_admin):
         _type=_type,
         content=content,
         to_only_admin=to_only_admin,
-        display_date=obj.created_at
+        display_date=obj.created_at,
+        instance_id=instance_id
     )
 
     if to_only_admin:
@@ -272,7 +274,7 @@ def send_join_request_mail(sender, instance, **kwargs):
     created = kwargs.get('created', False)
 
     if created:
-        create_notification(instance, 'join_request', instance.name, True)
+        create_notification(instance, 'join_request', instance.name, True, instance.id)
         subject = 'New Join Request!'
         message = 'New Join Request by {email}'.format(email=instance.email)
         from_email = 'support@jagrati.com'
@@ -283,8 +285,8 @@ def send_join_request_mail(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Event)
 def create_event_notification(sender, instance, **kwargs):
-    create_notification(instance, 'event', instance.title, False)
+    create_notification(instance, 'event', instance.title, False, instance.id)
 
 @receiver(post_save, sender=ClassFeedback)
 def create_class_feedback_notification(sender, instance, **kwargs):
-    create_notification(instance, 'class_feedback', instance._class.name, False)
+    create_notification(instance, 'class_feedback', instance._class.name, False, instance._class.id)
