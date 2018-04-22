@@ -260,7 +260,7 @@ def create_notification(obj, _type, content, to_only_admin, instance_id):
     )
 
     if to_only_admin:
-        filters = {'is_staff': False, 'is_superuser': True}
+        filters = {'is_superuser': True}
     else:
         filters = {'is_staff': True, 'is_superuser': False}
 
