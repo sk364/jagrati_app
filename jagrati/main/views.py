@@ -294,6 +294,10 @@ class UserNotificationViewSet(viewsets.ModelViewSet):
     filter_fields = ('is_seen', )
 
     def get_queryset(self):
-        queryset = UserNotification.objects.filter(user=self.request.user)
+        return UserNotification.objects.filter(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        queryset = self.get_queryset()
         queryset.update(is_seen=True)
-        return queryset
+        return response
