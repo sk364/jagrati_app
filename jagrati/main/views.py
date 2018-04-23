@@ -74,6 +74,31 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
     filter_fields = ('_class', )
     lookup_field = 'user__id'
 
+    def create(self, request, *args, **kwargs):
+        data = dict(request.data)
+
+        if data.get("first_name") and data.get("last_name") and data.get('class_num'):
+            first_name = data['first_name']
+            last_name = data['last_name']
+            user = User.objects.create(username=first_name, first_name=first_name, last_name=last_name)
+
+            class_num = data['class_num']
+            _class = Class.objects.get(name=class_num)
+
+            data['_class_id'] = _class.id
+            data['user_id'] = user.id
+
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({
+                'success': False,
+                'message': 'Required fields - first_name/last_name/class_num not present.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
 
 class AttendaceViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
