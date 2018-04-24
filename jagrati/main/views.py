@@ -76,6 +76,7 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = dict(request.data)
+        data = {key: list(data[key])[0] for key in data}
 
         if data.get("first_name") and data.get("last_name") and data.get('class_num'):
             first_name = data['first_name']
@@ -87,6 +88,8 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
 
             data['_class_id'] = _class.id
             data['user_id'] = user.id
+            data['contact'] = None if data.get('contact') == '' else data.get('contact')
+            data['emergency_contact'] = None if data.get('emergency_contact') == '' else data.get('emergency_contact')
 
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
