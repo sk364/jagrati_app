@@ -102,7 +102,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentProfile
         fields = ('user', 'user_id', '_class', '_class_id', 'village', 'sex', 'dob', 'mother', 'father',
-                  'contact', 'emergency_contact', 'display_picture', 'attendance', )
+                  'contact', 'emergency_contact', 'display_picture', 'attendance', 'address', )
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
