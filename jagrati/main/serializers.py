@@ -89,7 +89,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         :return: attendance information `dict`
         """
 
-        user_attendance = obj.user.user_attendance.count()
+        user_attendance = obj.user.user_attendance.values('class_date').distinct().count()
         total_classes = Attendance.objects.values('class_date').distinct().count()
 
         return {
