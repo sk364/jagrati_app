@@ -84,7 +84,7 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
 
         if data.get("first_name") and data.get('class_num'):
             first_name = data['first_name']
-            last_name = data['last_name']
+            last_name = data['last_name'] if data['last_name'] is not None else ''
             user = User.objects.create(username=first_name, first_name=first_name, last_name=last_name)
 
             class_num = data['class_num']
