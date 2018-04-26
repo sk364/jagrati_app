@@ -45,7 +45,7 @@ class VolunteerProfileViewSet(viewsets.ModelViewSet):
     filter_fields = ('user__is_active', )
 
     def get_queryset(self):
-        return UserProfile.objects.filter(user__is_staff=True, user__is_superuser=False)
+        return UserProfile.objects.filter(user__is_staff=True)
 
     def create(self, request):
         data = request.data
