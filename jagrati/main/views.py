@@ -76,9 +76,13 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = dict(request.data)
-        data = {key: list(data[key])[0] for key in data}
+        for key in data:
+            value = list(data[key])[0]
+            if value == '':
+                value = None
+            data[key] = value
 
-        if data.get("first_name") and data.get("last_name") and data.get('class_num'):
+        if data.get("first_name") and data.get('class_num'):
             first_name = data['first_name']
             last_name = data['last_name']
             user = User.objects.create(username=first_name, first_name=first_name, last_name=last_name)
@@ -88,8 +92,6 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
 
             data['_class_id'] = _class.id
             data['user_id'] = user.id
-            data['contact'] = None if data.get('contact') == '' else data.get('contact')
-            data['emergency_contact'] = None if data.get('emergency_contact') == '' else data.get('emergency_contact')
 
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
@@ -99,7 +101,41 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
         else:
             return Response({
                 'success': False,
-                'message': 'Required fields - first_name/last_name/class_num not present.'
+                'message': 'Required fields - first_name/class_num not present.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        data = dict(request.data)
+        for key in data:
+            value = list(data[key])[0]
+            if value == '':
+                value = None
+
+            data[key] = value
+
+        if data.get('class_num'):
+            instance = self.get_object()
+
+            data['user_id'] = instance.user.id
+            class_num = data['class_num']
+            _class = Class.objects.filter(name=class_num).first()
+            if _class:
+                data['_class_id'] = _class.id
+            else:
+                return Response({
+                    'success': False,
+                    'message': 'Class does not exist'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            serializer = self.get_serializer(instance, data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            return Response(serializer.data)
+        else:
+            return Response({
+                'success': False,
+                'message': 'Required fields - first_name/class_num not present.'
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
