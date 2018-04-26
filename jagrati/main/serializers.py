@@ -45,10 +45,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_hobbies(self, obj):
         hobbies = []
 
-        for hobby in obj.user.hobby_user.all():
+        for hobby_user in obj.user.hobby_user.all():
             hobbies.append({
-                'id': hobby.id,
-                'name': hobby.name
+                'id': hobby_user.hobby.id,
+                'name': hobby_user.hobby.name
             })
 
         return hobbies
@@ -58,10 +58,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_skills(self, obj):
         skills = []
 
-        for skill in obj.user.skill_user.all():
+        for skill_user in obj.user.skill_user.all():
             skills.append({
-                'id': skill.id,
-                'name': skill.name
+                'id': skill_user.skill.id,
+                'name': skill_user.skill.name
             })
 
         return skills
