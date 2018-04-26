@@ -42,10 +42,37 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     attendance = serializers.SerializerMethodField(read_only=True)
 
+    def get_hobbies(self, obj):
+        hobbies = []
+
+        for hobby in obj.user.hobby_user.all():
+            hobbies.append({
+                'id': hobby.id,
+                'name': hobby.name
+            })
+
+        return hobbies
+
+    hobbies = serializers.SerializerMethodField(read_only=True)
+
+    def get_skills(self, obj):
+        skills = []
+
+        for skill in obj.user.skill_user.all():
+            skills.append({
+                'id': skill.id,
+                'name': skill.name
+            })
+
+        return skills
+
+    skills = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = UserProfile
         fields = ('user', 'user_id', 'programme', 'discipline', 'dob', 'batch', 'contact',
-                  'address', 'status', 'is_contact_hidden', 'display_picture', 'attendance', )
+                  'address', 'status', 'is_contact_hidden', 'display_picture', 'attendance',
+                  'hobbies', 'skills', )
 
 
 class ClassSerializer(serializers.ModelSerializer):
