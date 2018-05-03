@@ -256,6 +256,8 @@ class JoinRequestViewSet(viewsets.ModelViewSet):
     queryset = JoinRequest.objects.all()
     serializer_class = JoinRequestSerializer
     permission_classes = (IsAnonymousUserForPOST, )
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('status', )
 
     @detail_route(methods=['put'])
     def process(self, request, pk):
