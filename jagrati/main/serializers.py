@@ -18,10 +18,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(User.objects.filter(is_staff=True, is_superuser=False), read_only=True)
+    user = UserSerializer(User.objects.filter(is_staff=True), read_only=True)
     user_id = serializers.PrimaryKeyRelatedField(
         source='user',
-        queryset=User.objects.filter(is_staff=True, is_superuser=False),
+        queryset=User.objects.filter(is_staff=True),
         write_only=True
     )
 
@@ -282,7 +282,7 @@ class ClassFeedbackSerializer(serializers.ModelSerializer):
 
 
 class VolunteerSubjectSerializer(serializers.ModelSerializer):
-    volunteer = UserSerializer(User.objects.filter(is_staff=True, is_superuser=False), read_only=True)
+    volunteer = UserSerializer(User.objects.filter(is_staff=True), read_only=True)
     volunteer_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.filter(is_staff=True),
         source='volunteer',
