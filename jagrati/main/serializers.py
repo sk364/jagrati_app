@@ -284,7 +284,7 @@ class ClassFeedbackSerializer(serializers.ModelSerializer):
 class VolunteerSubjectSerializer(serializers.ModelSerializer):
     volunteer = UserSerializer(User.objects.filter(is_staff=True, is_superuser=False), read_only=True)
     volunteer_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.filter(is_staff=True, is_superuser=False),
+        queryset=User.objects.filter(is_staff=True),
         source='volunteer',
         write_only=True
     )
