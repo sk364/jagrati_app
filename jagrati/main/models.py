@@ -208,7 +208,7 @@ class JoinRequest(models.Model):
         ('REJECTED', 'REJECTED')
     )
 
-    email = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(max_length=50, unique=True)
     name = models.CharField(max_length=50)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
     created_at = models.DateTimeField(auto_now_add=True)
