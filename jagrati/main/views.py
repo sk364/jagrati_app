@@ -259,6 +259,16 @@ class JoinRequestViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, )
     filter_fields = ('status', )
 
+    def create(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        if email in User.objects.all().values_list('username', flat=True):
+            return Response({
+                'success': False,
+                'detail': 'A user already exists with this email id.'
+            })
+
+        return super().create(request, *args, **kwargs)
+
     @detail_route(methods=['put'])
     def process(self, request, pk):
         """
@@ -283,6 +293,12 @@ class JoinRequestViewSet(viewsets.ModelViewSet):
 
             if join_req_obj.status == 'PENDING':
                 if process_type == 'A':
+                    if email in User.objects.all().values_list('username', flat=True):
+                        return Response({
+                            'success': False,
+                            'detail': 'User with email already exists.'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+
                     user = User.objects.create(
                         username=email,
                         first_name=name,
