@@ -134,27 +134,27 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all(), read_only=True)
-    student_ids = serializers.ListField(
+    user_ids = serializers.ListField(
         child = serializers.PrimaryKeyRelatedField(
-            queryset=User.objects.filter(is_staff=False, is_superuser=False),
+            queryset=User.objects.all(),
             write_only=True
         ),
         write_only=True
     )
 
     def create(self, validated_data):
-        students = validated_data['student_ids']
+        users = validated_data['user_ids']
         attendance_objs = []
 
-        for student in students:
-            attendance_objs.append(self.Meta.model(user=student))
+        for user in users:
+            attendance_objs.append(self.Meta.model(user=user))
 
         self.Meta.model.objects.bulk_create(attendance_objs)
         return attendance_objs[0]
 
     class Meta:
         model = Attendance
-        fields = ('user', 'class_date', 'student_ids', )
+        fields = ('user', 'class_date', 'user_ids', )
         read_only_fields = ('user', 'class_date', )
 
 
