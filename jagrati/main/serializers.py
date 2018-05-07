@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from rest_framework import serializers
 
-from .models import (Attendance, Class, ClassFeedback, Event, Hobby, JoinRequest,
+from .models import (Attendance, Class, ClassFeedback, Config, Event, Hobby, JoinRequest,
                      Notification, Skill, StudentFeedback, StudentProfile, Subject,
                      Syllabus, UserHobby, UserNotification, UserProfile, UserSkill,
                      VolunteerSubject, )
@@ -376,3 +376,9 @@ class UserNotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserNotification
         fields = ('user', 'notification', 'is_seen')
+
+
+class ConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Config
+        fields = ('num_inactive_student_days', )

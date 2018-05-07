@@ -9,13 +9,13 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import (Attendance, Class, ClassFeedback, Event, JoinRequest,
+from .models import (Attendance, Class, ClassFeedback, Config, Event, JoinRequest,
                      Notification, StudentFeedback, StudentProfile, Subject,
                      Syllabus, UserHobby, UserNotification, UserProfile,
                      UserSkill, VolunteerSubject, )
 from .permissions import IsAnonymousUserForPOST, IsOwner
 from .serializers import (AttendanceSerializer, ClassSerializer,
-                          ClassFeedbackSerializer, EventSerializer,
+                          ClassFeedbackSerializer, ConfigSerializer, EventSerializer,
                           JoinRequestSerializer, NotificationSerializer,
                           StudentFeedbackSerializer, StudentProfileSerializer,
                           SubjectSerializer, SyllabusSerializer,
@@ -383,3 +383,9 @@ class UserNotificationViewSet(viewsets.ModelViewSet):
         queryset = self.get_queryset()
         queryset.update(is_seen=True)
         return response
+
+
+class ConfigViewSet(viewsets.ModelViewSet):
+    queryset = Config.objects.all()
+    serializer_class = ConfigSerializer
+

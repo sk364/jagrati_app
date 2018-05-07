@@ -244,6 +244,13 @@ class UserNotification(models.Model):
         return '{} - {} - {}'.format(self.user, self.notification, self.is_seen)
 
 
+class Config(models.Model):
+    num_inactive_student_days = models.IntegerField(default=7)
+
+    def __str__(self):
+        return 'Inactive Student Days: {}'.format(self.num_inactive_days)
+
+
 def create_notification(obj, _type, content, to_only_admin, instance_id):
     """
     :desc: Creates a notification object.

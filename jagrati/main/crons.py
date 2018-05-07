@@ -1,13 +1,17 @@
 from datetime import datetime, timedelta
 
-from main.models import Attendance
+from main.models import Attendance, Config
 
 
 def update_inactive_students():
     today = datetime.now()
     students = User.objects.filter(is_staff=False, is_superuser=False)
-    # TODO: Add class management config model to fetch this value
-    num_days_of_inactivity = 5
+    config = Config.objects.all().first()
+
+    if config is None:
+        config = Config.objects.create()
+
+    num_days_of_inactivity = config.num_inactive_student_days
     attend_dict = {}
 
     for i in range(num_days_of_inactivity):
