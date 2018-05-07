@@ -381,4 +381,4 @@ class UserNotificationSerializer(serializers.ModelSerializer):
 class ConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = Config
-        fields = ('num_inactive_student_days', )
+        fields = ('id', 'num_inactive_student_days', )
