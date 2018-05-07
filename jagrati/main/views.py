@@ -71,7 +71,7 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
     filter_backends = (filters.DjangoFilterBackend, )
-    filter_fields = ('_class', )
+    filter_fields = ('_class', 'user__is_active', )
     lookup_field = 'user__id'
 
     def create(self, request, *args, **kwargs):
