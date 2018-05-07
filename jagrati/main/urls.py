@@ -2,10 +2,11 @@ from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 
 from .views import (AttendaceViewSet, ClassViewSet, ClassFeedbackViewSet,
-                    JoinRequestViewSet, EventViewSet, StudentFeedbackViewSet,
-                    StudentProfileViewSet, SubjectViewSet, SyllabusViewSet,
-                    UserHobbyViewSet, UserNotificationViewSet, UserSkillViewSet,
-                    UserViewSet, VolunteerProfileViewSet, VolunteerSubjectViewSet, )
+                    ConfigViewSet, JoinRequestViewSet, EventViewSet,
+                    StudentFeedbackViewSet, StudentProfileViewSet, SubjectViewSet,
+                    SyllabusViewSet, UserHobbyViewSet, UserNotificationViewSet,
+                    UserSkillViewSet, UserViewSet, VolunteerProfileViewSet,
+                    VolunteerSubjectViewSet, )
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -23,5 +24,6 @@ router.register(r'subjects', SubjectViewSet)
 router.register(r'department', VolunteerSubjectViewSet)
 router.register(r'join_requests', JoinRequestViewSet)
 router.register(r'user_notifications', UserNotificationViewSet)
+router.register(r'config', ConfigViewSet)
 
 urlpatterns = router.urls
