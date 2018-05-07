@@ -32,7 +32,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
         :return: attendance information `dict`
         """
 
-        user_attendance = obj.user.user_attendance.count()
+        user_attendance = obj.user.user_attendance.filter(
+            is_extra_class=False
+        ).values('class_date').distinct().count()
         total_classes = Attendance.objects.values('class_date').distinct().count()
 
         return {
@@ -41,6 +43,19 @@ class UserProfileSerializer(serializers.ModelSerializer):
         }
 
     attendance = serializers.SerializerMethodField(read_only=True)
+
+    def get_extra_classes(self, obj):
+        """
+        :desc: Computes extra classes of user
+        :param: `obj` Model instance
+        :return: `int` number of extra classes
+        """
+
+        return obj.user.user_attendance.filter(
+            is_extra_class=True
+        ).values('class_date').distinct().count()
+
+    extra_classes = serializers.SerializerMethodField(read_only=True)
 
     def get_hobbies(self, obj):
         hobbies = []
@@ -72,7 +87,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = ('user', 'user_id', 'programme', 'discipline', 'dob', 'batch', 'contact',
                   'address', 'status', 'is_contact_hidden', 'display_picture', 'attendance',
-                  'hobbies', 'skills', )
+                  'hobbies', 'skills', 'extra_classes', )
 
 
 class ClassSerializer(serializers.ModelSerializer):
