@@ -133,6 +133,9 @@ class VolunteerSubject(models.Model):
     volunteer = models.ForeignKey(User, related_name='volunteer_subject', on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, related_name='subject_volunteer', on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = ('volunteer', 'subject')
+
     def __str__(self):
         return '{} - {}'.format(self.volunteer, self.subject)
 
